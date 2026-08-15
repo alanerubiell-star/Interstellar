@@ -13,33 +13,49 @@ orden de importancia.
 Es lento y es el único que se acumula. Un artículo publicado hoy sigue trayendo
 visitas dentro de tres años sin que vuelvas a tocarlo.
 
-### Los seis artículos que ya están en el repo
+### Los 15 artículos que ya están en el repo
 
-- `/blog/como-hacer-una-cotizacion.html` — atrae a quien está por cotizar hoy
-- `/blog/cuanto-cobrar-freelance.html` — mucho volumen, intención más amplia
-- `/blog/cliente-no-paga.html` — dolor intenso, trae audiencia muy fiel
-- `/blog/formato-cotizacion-word-excel.html` — captura a quien busca plantilla
-- `/blog/cotizacion-factura-remision.html` — duda constante, fácil de posicionar
-- `/blog/presupuesto-de-obra.html` — nicho de construcción, tickets grandes
+**Cotizar** — el núcleo, la intención más cercana a usar la herramienta
+- `como-hacer-una-cotizacion` · `formato-cotizacion-word-excel` ·
+  `errores-al-cotizar` · `seguimiento-cotizacion` · `presupuesto-de-obra` ·
+  `cotizar-diseno-de-logotipo`
 
-Los seis están enlazados entre sí. Cuando agregues uno nuevo, enlázalo desde dos
-o tres de los existentes: los artículos aislados no posicionan.
+**Precios** — mucho volumen, intención más amplia
+- `cuanto-cobrar-freelance` · `por-proyecto-o-por-hora` ·
+  `subir-precios-sin-perder-clientes`
 
-### Los 9 siguientes, en orden de prioridad
+**Cobrar y documentos** — dolor intenso, audiencia muy fiel
+- `anticipo-para-empezar` · `cliente-no-paga` · `cotizacion-factura-remision` ·
+  `contrato-para-freelancers`
 
-Uno por semana. Cada uno debe enlazar a la herramienta al menos dos veces.
+**Fiscal (México)** — volumen enorme, competencia mal resuelta
+- `darse-de-alta-sat-freelance` · `resico-freelance`
 
-| # | Título | Por qué |
-|---|---|---|
-| 1 | Plantilla de contrato para freelancers | Alta intención; enlaza al paquete de plantillas |
-| 2 | Cómo cotizar un diseño de logotipo | Nicho concreto con mucha búsqueda |
-| 3 | Qué es un anticipo y por qué siempre debes pedirlo | Refuerza el mensaje del producto |
-| 4 | Cómo darse de alta en el SAT como freelance | Volumen enorme en México |
-| 5 | RESICO para freelancers: cuánto vas a pagar realmente | Muy buscado y mal explicado en la web |
-| 6 | 10 errores al cotizar que te cuestan clientes | Formato de lista, se comparte bien |
-| 7 | Cómo dar seguimiento a una cotización sin ser molesto | Cierra el ciclo del artículo principal |
-| 8 | Cotizar por proyecto vs. por hora | Tema con opinión, genera enlaces |
-| 9 | Cómo subir tus precios sin perder clientes | Emocional, muy compartible |
+Todos están enlazados entre sí (mínimo dos enlaces entrantes cada uno) y todos
+enlazan a la herramienta al menos dos veces. Cuando agregues uno nuevo, mantén
+esa regla: los artículos aislados no posicionan.
+
+> **Antes de publicar los dos fiscales:** que los revise un contador. Explican el
+> mecanismo, que no cambia, pero las tasas y los topes se mueven con cada reforma
+> y ambos llevan un aviso de verificación. Un dato fiscal equivocado hace más
+> daño a la credibilidad de la marca que el tráfico que trae el artículo.
+
+### Qué escribir después
+
+Ya no hay una lista pendiente: el siguiente lote debe salir de **datos, no de
+suposiciones**. A partir del mes 2, abre Search Console y busca:
+
+1. **Consultas donde ya apareces en posición 5–20.** Son las que están a un
+   empujón de la primera página. Mejorar un artículo existente para esas
+   consultas rinde más que escribir uno nuevo.
+2. **Consultas que traen clics a un artículo que no las trata a fondo.** Cada una
+   es un artículo nuevo pidiendo que lo escriban.
+3. **Preguntas que te lleguen por correo de soporte.** Si un usuario la
+   preguntó, la está buscando en Google.
+
+Mientras no tengas esos datos, amplía por nicho de oficio —cómo cotizar
+fotografía, carpintería, desarrollo web, eventos, traducción—: misma estructura,
+audiencia nueva, y son los que menos competencia tienen.
 
 ### Reglas que hacen que un artículo posicione
 
