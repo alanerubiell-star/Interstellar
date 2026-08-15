@@ -13,30 +13,33 @@ orden de importancia.
 Es lento y es el único que se acumula. Un artículo publicado hoy sigue trayendo
 visitas dentro de tres años sin que vuelvas a tocarlo.
 
-### Los tres artículos que ya están en el repo
+### Los seis artículos que ya están en el repo
 
 - `/blog/como-hacer-una-cotizacion.html` — atrae a quien está por cotizar hoy
 - `/blog/cuanto-cobrar-freelance.html` — mucho volumen, intención más amplia
 - `/blog/cliente-no-paga.html` — dolor intenso, trae audiencia muy fiel
+- `/blog/formato-cotizacion-word-excel.html` — captura a quien busca plantilla
+- `/blog/cotizacion-factura-remision.html` — duda constante, fácil de posicionar
+- `/blog/presupuesto-de-obra.html` — nicho de construcción, tickets grandes
 
-### Los 12 siguientes, en orden de prioridad
+Los seis están enlazados entre sí. Cuando agregues uno nuevo, enlázalo desde dos
+o tres de los existentes: los artículos aislados no posicionan.
+
+### Los 9 siguientes, en orden de prioridad
 
 Uno por semana. Cada uno debe enlazar a la herramienta al menos dos veces.
 
 | # | Título | Por qué |
 |---|---|---|
-| 1 | Formato de cotización en Word y Excel (y por qué te conviene otra cosa) | Volumen altísimo; captura a quien busca plantilla |
-| 2 | Diferencia entre cotización, factura y remisión | Duda constante, fácil de posicionar |
-| 3 | Cómo hacer un presupuesto de obra (con ejemplo) | Nicho de construcción, tickets grandes |
-| 4 | Plantilla de contrato para freelancers | Alta intención; enlaza al paquete de plantillas |
-| 5 | Cómo cotizar un diseño de logotipo | Nicho concreto con mucha búsqueda |
-| 6 | Qué es un anticipo y por qué siempre debes pedirlo | Refuerza el mensaje del producto |
-| 7 | Cómo darse de alta en el SAT como freelance | Volumen enorme en México |
-| 8 | RESICO para freelancers: cuánto vas a pagar realmente | Muy buscado y mal explicado en la web |
-| 9 | 10 errores al cotizar que te cuestan clientes | Formato de lista, se comparte bien |
-| 10 | Cómo dar seguimiento a una cotización sin ser molesto | Cierra el ciclo del artículo principal |
-| 11 | Cotizar por proyecto vs. por hora | Tema con opinión, genera enlaces |
-| 12 | Cómo subir tus precios sin perder clientes | Emocional, muy compartible |
+| 1 | Plantilla de contrato para freelancers | Alta intención; enlaza al paquete de plantillas |
+| 2 | Cómo cotizar un diseño de logotipo | Nicho concreto con mucha búsqueda |
+| 3 | Qué es un anticipo y por qué siempre debes pedirlo | Refuerza el mensaje del producto |
+| 4 | Cómo darse de alta en el SAT como freelance | Volumen enorme en México |
+| 5 | RESICO para freelancers: cuánto vas a pagar realmente | Muy buscado y mal explicado en la web |
+| 6 | 10 errores al cotizar que te cuestan clientes | Formato de lista, se comparte bien |
+| 7 | Cómo dar seguimiento a una cotización sin ser molesto | Cierra el ciclo del artículo principal |
+| 8 | Cotizar por proyecto vs. por hora | Tema con opinión, genera enlaces |
+| 9 | Cómo subir tus precios sin perder clientes | Emocional, muy compartible |
 
 ### Reglas que hacen que un artículo posicione
 

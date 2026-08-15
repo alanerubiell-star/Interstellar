@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /gracias.html
 
-Sitemap: https://cotiza.app/sitemap.xml
+Sitemap: https://cotiza-pdf.netlify.app/sitemap.xml

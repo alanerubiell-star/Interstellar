@@ -5,7 +5,7 @@
    ------------------------------------------------------------------ */
 window.COTIZA = {
   // 1. Tu dominio final (sin diagonal al final).
-  siteUrl: 'https://cotiza.app',
+  siteUrl: 'https://cotiza-pdf.netlify.app',
 
   // 2. Payment Link de Stripe. Se crea en:
   //    Stripe Dashboard → Productos → Payment links → Crear.

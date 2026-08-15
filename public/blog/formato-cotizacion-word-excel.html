@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Formato de cotización en Word y Excel: cómo armarlo bien — Cotiza</title>
+<meta name="description" content="Cómo hacer un formato de cotización en Word o Excel paso a paso: la estructura completa, las fórmulas que necesitas en Excel y los problemas que te vas a encontrar.">
+<link rel="canonical" href="https://cotiza-pdf.netlify.app/blog/formato-cotizacion-word-excel.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Formato de cotización en Word y Excel: cómo armarlo bien">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%233b46f1'/><text y='.9em' x='50%25' text-anchor='middle' font-size='62' font-family='sans-serif' font-weight='bold' fill='white'>C</text></svg>">
+<link rel="stylesheet" href="/assets/css/site.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap nav-in">
+    <a href="/" class="logo"><span class="logo-mark">C</span> Cotiza</a>
+    <div class="nav-links">
+      <a href="/blog/" class="hide-sm">Guías</a>
+      <a href="/app.html" class="btn btn-primary" style="padding:9px 16px">Crear cotización</a>
+    </div>
+  </div>
+</nav>
+
+<article class="article">
+  <div class="wrap narrow">
+    <h1>Formato de cotización en Word y Excel: cómo armarlo bien</h1>
+    <p class="meta">Guía práctica · 8 min de lectura</p>
+
+    <p>Word y Excel siguen siendo las herramientas más usadas para cotizar, y para muchos casos están perfectamente bien. El problema no es que sean malas: es que la mayoría las usa sin estructura, y termina con un documento distinto cada vez.</p>
+
+    <p>Esta guía te da la estructura exacta, las fórmulas de Excel que necesitas y una comparación honesta de cuándo conviene cada opción.</p>
+
+    <h2>Word o Excel: cuál te conviene</h2>
+
+    <table>
+      <thead><tr><th></th><th>Word</th><th>Excel</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Mejor para</strong></td><td>Pocos conceptos, mucho texto explicativo</td><td>Muchas partidas, cantidades y cálculos</td></tr>
+        <tr><td><strong>Cálculos</strong></td><td>Manuales (riesgo de error alto)</td><td>Automáticos con fórmulas</td></tr>
+        <tr><td><strong>Se ve bien</strong></td><td>Sí, control total del diseño</td><td>Requiere trabajo para no verse a hoja de cálculo</td></tr>
+        <tr><td><strong>Exportar a PDF</strong></td><td>Directo y confiable</td><td>Cuidado con los saltos de página</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Regla simple:</strong> si tu cotización tiene menos de 5 partidas y necesitas explicar el alcance, Word. Si tiene más de 10 partidas con cantidades y precios unitarios, Excel.</p>
+
+    <h2>La estructura del documento</h2>
+
+    <p>Sirve igual en Word, en Excel o en cualquier otra herramienta. Son cuatro bloques.</p>
+
+    <h3>Bloque 1: encabezado</h3>
+    <ul>
+      <li>Tu logo (arriba a la izquierda)</li>
+      <li>Nombre o razón social, teléfono, correo y RFC</li>
+      <li>La palabra <strong>COTIZACIÓN</strong> en grande, arriba a la derecha</li>
+      <li>Folio, fecha de emisión y vigencia</li>
+    </ul>
+
+    <h3>Bloque 2: el cliente</h3>
+    <ul>
+      <li>Empresa y nombre de la persona que decide</li>
+      <li>Su correo o teléfono</li>
+    </ul>
+
+    <h3>Bloque 3: la tabla de conceptos</h3>
+    <p>Cuatro columnas mínimo: <strong>Concepto · Cantidad · Precio unitario · Importe</strong>. Si vendes productos físicos, agrega una de unidad (pieza, metro, caja).</p>
+
+    <h3>Bloque 4: totales y condiciones</h3>
+    <ul>
+      <li>Subtotal, descuento, impuesto y total, alineados a la derecha</li>
+      <li>Condiciones de pago: anticipo, saldo, método y plazo</li>
+      <li>Qué NO incluye</li>
+      <li>Vigencia repetida al pie</li>
+    </ul>
+
+    <h2>Cómo armarlo en Word, paso a paso</h2>
+    <ol>
+      <li><strong>Diseño → Márgenes → Estrechos.</strong> Los márgenes por defecto desperdician demasiado espacio.</li>
+      <li><strong>Insertar → Tabla</strong> de 2 columnas y 1 fila para el encabezado. Logo en la celda izquierda, «COTIZACIÓN» y los datos en la derecha, alineados a la derecha. Quita los bordes de esa tabla: te sirve para alinear, no para que se vea.</li>
+      <li>Un par de saltos y escribe <strong>PARA:</strong> con los datos del cliente.</li>
+      <li><strong>Insertar → Tabla</strong> de 4 columnas para los conceptos. Aplica un estilo con la fila de encabezado en color sólido y texto blanco.</li>
+      <li>Debajo, otra tabla de 2 columnas sin bordes para los totales, alineada a la derecha.</li>
+      <li>Al final, las condiciones en texto normal.</li>
+      <li><strong>Archivo → Guardar como → Plantilla de Word (.dotx)</strong>. Este paso es el que te ahorra el trabajo la próxima vez: abres la plantilla y el original queda intacto.</li>
+    </ol>
+
+    <div class="callout">
+      <p><strong>El error más común en Word:</strong> sumar los importes a mano. Un error de dedo en el total es de las cosas más caras que le pueden pasar a una cotización, porque el cliente sí lo va a notar —o peor, no lo va a notar y te va a exigir ese precio—.</p>
+    </div>
+
+    <h2>Cómo armarlo en Excel (con las fórmulas)</h2>
+
+    <p>Supongamos que tus conceptos van de la fila 12 a la 25, con estas columnas:</p>
+
+    <table>
+      <thead><tr><th>Columna</th><th>Contenido</th></tr></thead>
+      <tbody>
+        <tr><td>A</td><td>Concepto</td></tr>
+        <tr><td>B</td><td>Cantidad</td></tr>
+        <tr><td>C</td><td>Precio unitario</td></tr>
+        <tr><td>D</td><td>Importe</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Importe por renglón (celda D12, y se arrastra hacia abajo)</h3>
+    <pre style="background:var(--bg-soft);padding:14px;border-radius:9px;overflow-x:auto;font-size:.9rem"><code>=SI(A12="";"";B12*C12)</code></pre>
+    <p>El <code>SI</code> deja la celda en blanco cuando no hay concepto, en vez de mostrar un $0.00 en los renglones vacíos.</p>
+
+    <h3>Totales</h3>
+    <pre style="background:var(--bg-soft);padding:14px;border-radius:9px;overflow-x:auto;font-size:.9rem"><code>Subtotal   =SUMA(D12:D25)
+Descuento  =D27*F27          (F27 = porcentaje de descuento)
+Base       =D27-D28
+IVA        =D29*0.16
+Total      =D29+D30</code></pre>
+
+    <div class="callout">
+      <p><strong>Nunca escribas 0.16 dentro de varias fórmulas.</strong> Pon la tasa en una celda aparte y apunta a ella. El día que cambie el impuesto, o que cotices a un cliente exento, tocas una celda en vez de quince.</p>
+    </div>
+
+    <h3>Que no se vea a hoja de cálculo</h3>
+    <ul>
+      <li><strong>Vista → desmarca «Líneas de cuadrícula».</strong> Este solo cambio hace el 80% del trabajo.</li>
+      <li>Formato de moneda en las columnas C y D, con dos decimales.</li>
+      <li>Fila de encabezado con relleno sólido y texto blanco en negritas.</li>
+      <li><strong>Disposición de página → Área de impresión</strong> para que no se te cuelen columnas vacías en el PDF.</li>
+      <li>Antes de exportar, revisa siempre en <strong>Vista previa de impresión</strong>.</li>
+    </ul>
+
+    <h2>Los problemas que te vas a encontrar</h2>
+
+    <p>Nada de esto es motivo para no usar Word o Excel. Pero conviene saberlo antes:</p>
+
+    <ol>
+      <li><strong>La plantilla se degrada.</strong> Empiezas con un archivo limpio y a los seis meses tienes «cotizacion_final_v3_BUENA.docx» y tres versiones que no coinciden.</li>
+      <li><strong>Sobrescribir el original.</strong> Todos lo hemos hecho: abres la plantilla, la llenas, le das Guardar y perdiste la plantilla. Por eso el `.dotx`.</li>
+      <li><strong>Numeración de folios.</strong> Ni Word ni Excel llevan la cuenta. O tienes una libreta aparte, o vas a repetir folios.</li>
+      <li><strong>Fórmulas rotas al insertar filas.</strong> En Excel, agregar un concepto a la mitad muchas veces deja el <code>SUMA</code> sin incluirlo. Revisa el rango cada vez.</li>
+      <li><strong>Desde el celular es impracticable.</strong> Si el cliente te pide precio y estás fuera de la oficina, no vas a armar esto en el teléfono.</li>
+      <li><strong>El PDF sale mal.</strong> Sobre todo desde Excel: saltos de página en medio de la tabla, columnas cortadas, encabezados que no se repiten.</li>
+    </ol>
+
+    <h2>Cuándo Word o Excel es la respuesta correcta</h2>
+
+    <p>Sé honesto contigo mismo. Word o Excel te conviene si:</p>
+    <ul>
+      <li>Cotizas menos de dos veces al mes.</li>
+      <li>Tus cotizaciones llevan mucho texto de alcance, cláusulas o anexos.</li>
+      <li>Tu cotización se alimenta de una hoja de costos que ya tienes en Excel.</li>
+      <li>Tu cliente exige un formato propio que debes respetar.</li>
+    </ul>
+
+    <p>Y te conviene otra cosa si cotizas cada semana, si trabajas desde el celular, o si ya perdiste tiempo peleándote con una tabla que no se alinea.</p>
+
+    <div class="cta-band" style="margin-top:48px">
+      <h2 style="font-size:1.5rem">O sáltate el formato por completo</h2>
+      <p style="margin-bottom:20px">La estructura de esta guía ya viene armada, con los cálculos hechos y el PDF listo. Gratis y sin registro.</p>
+      <a href="/app.html" class="btn btn-primary btn-lg">Crear cotización gratis →</a>
+    </div>
+
+    <h2 style="margin-top:44px">Sigue leyendo</h2>
+    <ul>
+      <li><a href="/blog/como-hacer-una-cotizacion.html">Cómo hacer una cotización profesional (con ejemplo)</a></li>
+      <li><a href="/blog/cotizacion-factura-remision.html">Cotización, factura y remisión: cuál mandar y cuándo</a></li>
+      <li><a href="/blog/cuanto-cobrar-freelance.html">Cuánto cobrar como freelance</a></li>
+    </ul>
+
+    <p style="margin-top:34px"><a href="/blog/">← Todas las guías</a></p>
+  </div>
+</article>
+
+<footer class="footer">
+  <div class="wrap footer-in">
+    <div><a href="/">Inicio</a><a href="/app.html">Herramienta</a><a href="/blog/">Guías</a><a href="/privacidad.html">Privacidad</a></div>
+    <small>© <span data-year>2026</span> Cotiza</small>
+  </div>
+</footer>
+
+<script src="/assets/js/config.js"></script>
+<script src="/assets/js/checkout.js"></script>
+</body>
+</html>
