@@ -29,15 +29,35 @@ Ideas disponibles con frecuencia: `cotizafacil.com`, `haztucotizacion.com`,
 
 ---
 
-## Paso 2 — Publicar el sitio (10 min)
+## Paso 2 — Publicar el sitio (5 min)
 
-1. Entra a [netlify.com](https://netlify.com) y crea una cuenta gratis.
-2. **Add new site → Import an existing project → GitHub** y elige este repositorio.
-3. Netlify lee `netlify.toml` solo. No cambies nada, dale **Deploy**.
-4. Cuando termine, ve a **Domain settings** y conecta tu dominio.
+**El proyecto de Netlify ya está creado:** `cotiza-pdf`
+→ https://app.netlify.com/projects/cotiza-pdf
+→ URL pública: https://cotiza-pdf.netlify.app
 
-El sitio ya está en línea. La herramienta gratuita funciona desde este momento
+Falta conectarlo con GitHub para que se publique. Es la parte que tienes que
+hacer tú desde el navegador:
+
+1. Abre https://app.netlify.com/projects/cotiza-pdf
+2. **Project configuration → Build & deploy → Link repository**
+3. Elige GitHub → el repositorio `Interstellar` → la rama
+   `claude/negocio-digital-15-diarios-3zhfz5` (o `main` si ya fusionaste).
+4. Netlify lee `netlify.toml` solo: publish `public`, functions
+   `netlify/functions`. No cambies nada. **Deploy**.
+
+Con el repositorio conectado, cada `git push` vuelve a publicar solo. Es mejor
+que subir archivos a mano.
+
+5. Cuando termine, ve a **Domain settings** y conecta tu dominio.
+
+El sitio queda en línea. La herramienta gratuita funciona desde este momento
 —no necesita ninguno de los pasos siguientes—; lo que falta es poder cobrar.
+
+> **Variable ya configurada:** `LICENSE_SECRET` está puesta en ese proyecto de
+> Netlify (**Site configuration → Environment variables**). Cópiala a tu gestor
+> de contraseñas. Como todavía no has vendido ninguna licencia, este es el único
+> momento sin costo para cambiarla: si prefieres una que nunca haya salido de tu
+> control, genera otra con el comando del paso 4.1 y reemplázala ahora.
 
 ---
 
@@ -83,7 +103,10 @@ Sin este paso las ventas funcionan, pero tienes que mandar cada clave a mano
 (`npm run licencia -- correo@cliente.com`). Con este paso, el cliente recibe su
 clave por correo en segundos.
 
-### 4.1 Genera tu secreto de licencias
+### 4.1 Tu secreto de licencias
+
+Ya hay uno configurado en Netlify (ver el aviso del paso 2). Si quieres generar
+otro:
 
 ```bash
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
