@@ -1,0 +1,40 @@
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+  command = "node scripts/build-sitemap.js"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Stripe firma el cuerpo crudo del webhook: no lo toques.
+[functions."stripe-webhook"]
+  included_files = []
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/comprar"
+  to = "/#precios"
+  status = 302
+
+# URLs limpias para el blog
+[[redirects]]
+  from = "/blog/:slug"
+  to = "/blog/:slug.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

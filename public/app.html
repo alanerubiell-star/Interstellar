@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crear cotización en PDF — Cotiza</title>
+<meta name="description" content="Llena el formulario y descarga tu cotización en PDF. Gratis, sin registro y sin instalar nada.">
+<link rel="canonical" href="https://cotiza.app/app.html">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%233b46f1'/><text y='.9em' x='50%25' text-anchor='middle' font-size='62' font-family='sans-serif' font-weight='bold' fill='white'>C</text></svg>">
+<link rel="stylesheet" href="/assets/css/site.css">
+<link rel="stylesheet" href="/assets/css/app.css">
+</head>
+<body>
+
+<div class="app-bar no-print">
+  <a href="/" class="logo"><span class="logo-mark">C</span> Cotiza</a>
+  <span class="spacer"></span>
+  <span class="pro-pill libre" id="estadoPro" title="Activar Pro">Plan gratis</span>
+  <button class="btn btn-ghost" id="btnNuevo" style="padding:8px 14px">Nuevo</button>
+  <button class="btn btn-primary" id="btnPdf" style="padding:8px 16px">Descargar PDF</button>
+</div>
+
+<div class="layout">
+
+  <!-- ============ FORMULARIO ============ -->
+  <form class="panel no-print" id="form" autocomplete="off">
+
+    <fieldset>
+      <legend>Documento</legend>
+      <div class="row">
+        <div class="field">
+          <label for="tipo">Tipo</label>
+          <select id="tipo" name="tipo">
+            <option value="COTIZACIÓN">Cotización</option>
+            <option value="PRESUPUESTO">Presupuesto</option>
+            <option value="FACTURA" data-pro>Factura (Pro)</option>
+            <option value="RECIBO" data-pro>Recibo (Pro)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="folio">Folio</label>
+          <input id="folio" name="folio" placeholder="COT-001">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="fecha">Fecha</label>
+          <input type="date" id="fecha" name="fecha">
+        </div>
+        <div class="field">
+          <label for="vigencia">Válida hasta</label>
+          <input type="date" id="vigencia" name="vigencia">
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Tus datos</legend>
+      <div class="field">
+        <label for="emisorNombre">Nombre o empresa</label>
+        <input id="emisorNombre" name="emisorNombre" placeholder="Estudio Nébula">
+      </div>
+      <div class="field">
+        <label for="emisorDatos">Contacto y datos fiscales</label>
+        <textarea id="emisorDatos" name="emisorDatos" placeholder="hola@estudionebula.mx&#10;55 1234 5678&#10;RFC: XAXX010101000"></textarea>
+      </div>
+      <div class="row">
+        <div class="field pro-lock" data-lock>
+          <label for="logo">Logo</label>
+          <input type="file" id="logo" accept="image/png,image/jpeg,image/svg+xml">
+        </div>
+        <div class="field pro-lock" data-lock>
+          <label for="color">Color de marca</label>
+          <input type="color" id="color" name="color" value="#3b46f1">
+        </div>
+      </div>
+      <p class="hint" id="logoHint">El logo y el color son del plan Pro.</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Cliente</legend>
+      <div class="field">
+        <label for="clienteNombre">Nombre o empresa</label>
+        <input id="clienteNombre" name="clienteNombre" placeholder="Comercializadora del Norte S.A. de C.V.">
+      </div>
+      <div class="field">
+        <label for="clienteDatos">Datos del cliente</label>
+        <textarea id="clienteDatos" name="clienteDatos" placeholder="Atención: Laura Méndez&#10;compras@cdn.mx"></textarea>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Conceptos</legend>
+      <div id="items"></div>
+      <button type="button" class="btn btn-ghost btn-block" id="btnAgregar">+ Agregar concepto</button>
+    </fieldset>
+
+    <fieldset>
+      <legend>Impuestos y moneda</legend>
+      <div class="row-3">
+        <div class="field">
+          <label for="moneda">Moneda</label>
+          <select id="moneda" name="moneda">
+            <option value="MXN">MXN</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="COP">COP</option>
+            <option value="ARS">ARS</option>
+            <option value="CLP">CLP</option>
+            <option value="PEN">PEN</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="impNombre">Impuesto</label>
+          <input id="impNombre" name="impNombre" value="IVA">
+        </div>
+        <div class="field">
+          <label for="impTasa">%</label>
+          <input type="number" id="impTasa" name="impTasa" value="16" min="0" max="100" step="0.01">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="descuento">Descuento (%)</label>
+          <input type="number" id="descuento" name="descuento" value="0" min="0" max="100" step="0.01">
+        </div>
+        <div class="field">
+          <label for="retencion">Retención (%)</label>
+          <input type="number" id="retencion" name="retencion" value="0" min="0" max="100" step="0.01">
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Condiciones</legend>
+      <div class="field">
+        <label for="condiciones">Forma y tiempos de pago</label>
+        <textarea id="condiciones" name="condiciones" placeholder="50% de anticipo, 50% contra entrega.&#10;Transferencia a BBVA 0123456789."></textarea>
+      </div>
+      <div class="field">
+        <label for="notas">Notas</label>
+        <textarea id="notas" name="notas" placeholder="Los precios no incluyen gastos de envío."></textarea>
+      </div>
+    </fieldset>
+  </form>
+
+  <!-- ============ VISTA PREVIA ============ -->
+  <div class="preview-pane">
+    <div class="paper" id="paper">
+
+      <div class="p-top">
+        <div class="p-emisor">
+          <img class="p-logo" id="vLogo" alt="" hidden>
+          <strong id="vEmisorNombre">Tu nombre o empresa</strong>
+          <div id="vEmisorDatos"></div>
+        </div>
+        <div class="p-doc">
+          <h1 id="vTipo">COTIZACIÓN</h1>
+          <div class="p-meta" id="vMeta"></div>
+        </div>
+      </div>
+
+      <div class="p-para">
+        <div class="p-label">Para</div>
+        <strong id="vClienteNombre">Nombre del cliente</strong>
+        <div id="vClienteDatos"></div>
+      </div>
+
+      <table class="p-tabla">
+        <thead>
+          <tr id="vThead">
+            <th style="width:52%">Concepto</th>
+            <th class="num">Cant.</th>
+            <th class="num">P. unitario</th>
+            <th class="num">Importe</th>
+          </tr>
+        </thead>
+        <tbody id="vItems"></tbody>
+      </table>
+
+      <div class="p-totales">
+        <table id="vTotales"></table>
+      </div>
+
+      <div class="p-notas" id="vNotas"></div>
+
+      <div class="p-marca" id="vMarca">
+        Documento creado con <a href="https://cotiza.app">Cotiza</a> — cotizaciones en PDF gratis
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="actions no-print">
+  <button type="button" class="btn btn-ghost" id="btnGuardar">Guardar</button>
+  <button type="button" class="btn btn-ghost" id="btnAbrir">Mis documentos</button>
+  <span class="saved-note" id="aviso"></span>
+  <span class="spacer"></span>
+  <button type="button" class="btn btn-primary" id="btnPdf2">Descargar PDF</button>
+</div>
+
+<script src="/assets/js/config.js"></script>
+<script src="/assets/js/license.js"></script>
+<script src="/assets/js/app.js"></script>
+</body>
+</html>

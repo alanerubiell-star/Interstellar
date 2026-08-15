@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>¡Gracias por tu compra! — Cotiza</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%233b46f1'/><text y='.9em' x='50%25' text-anchor='middle' font-size='62' font-family='sans-serif' font-weight='bold' fill='white'>C</text></svg>">
+<link rel="stylesheet" href="/assets/css/site.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap nav-in">
+    <a href="/" class="logo"><span class="logo-mark">C</span> Cotiza</a>
+  </div>
+</nav>
+
+<section style="padding-top:70px">
+  <div class="wrap narrow" style="text-align:center">
+    <div style="font-size:3.4rem;line-height:1;margin-bottom:18px">🎉</div>
+    <h1>¡Gracias por tu compra!</h1>
+
+    <div id="estado" class="callout" style="text-align:left">
+      <p>Activando tu licencia…</p>
+    </div>
+
+    <div id="acciones" style="margin-top:28px" hidden>
+      <a href="/app.html" class="btn btn-primary btn-lg">Abrir la herramienta →</a>
+    </div>
+
+    <div style="margin-top:44px;text-align:left">
+      <h2 style="font-size:1.2rem">Lo que sigue</h2>
+      <ol style="color:var(--ink-soft);padding-left:22px;line-height:1.9">
+        <li>Te llegó un correo con tu clave de licencia. <strong>Guárdalo</strong>: sirve para activar Pro en cualquier dispositivo y no caduca.</li>
+        <li>Si no lo ves en unos minutos, revisa spam o promociones.</li>
+        <li>¿Sigue sin llegar? Escríbenos a <a href="mailto:hola@cotiza.app" data-soporte>hola@cotiza.app</a> con el correo que usaste para pagar y te la reenviamos el mismo día.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap footer-in">
+    <div><a href="/">Inicio</a><a href="/app.html">Herramienta</a><a href="/privacidad.html">Privacidad</a></div>
+    <small>© <span data-year>2026</span> Cotiza</small>
+  </div>
+</footer>
+
+<script src="/assets/js/config.js"></script>
+<script src="/assets/js/license.js"></script>
+<script src="/assets/js/checkout.js"></script>
+<script>
+(async function () {
+  var box = document.getElementById('estado');
+  var acciones = document.getElementById('acciones');
+  var q = new URLSearchParams(location.search);
+
+  function listo(html) {
+    box.innerHTML = html;
+    acciones.hidden = false;
+  }
+
+  if (q.get('email') && (q.get('clave') || q.get('key'))) {
+    var ok = await window.Licencia.autoActivarDesdeUrl();
+    if (ok) {
+      listo('<p><strong>Pro activado en este navegador.</strong> Ya no verás la marca de agua y puedes usar tu logo.</p>');
+      return;
+    }
+    listo('<p>No pudimos activar la licencia automáticamente. Abre la herramienta, haz clic en <strong>Plan gratis</strong> arriba a la derecha y pega tu correo y tu clave.</p>');
+    return;
+  }
+
+  if (window.Licencia.esPro()) {
+    listo('<p><strong>Pro ya está activo</strong> en este navegador.</p>');
+    return;
+  }
+
+  listo('<p>Tu clave va en camino por correo. En cuanto la tengas, actívala desde la herramienta con el botón <strong>Plan gratis</strong>.</p>');
+})();
+</script>
+</body>
+</html>
