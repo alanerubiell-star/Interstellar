@@ -1,0 +1,36 @@
+{
+  "name": "noa-notes",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Noa Notes — asistente de IA que escucha, entiende y escribe la consulta clínica. App móvil y desktop.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b --noEmit",
+    "desktop": "npm run build && electron .",
+    "desktop:dev": "NOA_DEV_URL=http://localhost:5173 electron .",
+    "mobile:sync": "npm run build && npx cap sync",
+    "mobile:ios": "npm run build && npx cap sync ios && npx cap open ios",
+    "mobile:android": "npm run build && npx cap sync android && npx cap open android",
+    "smoke": "npm run build && node scripts/smoke.mjs"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.0",
+    "@capacitor/core": "^8.5.0",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.2",
+    "electron": "^33.4.11",
+    "playwright": "^1.62.1",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.9"
+  },
+  "main": "electron/main.cjs"
+}

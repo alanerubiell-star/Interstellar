@@ -1,0 +1,9 @@
+*.local
+*.tsbuildinfo
+.DS_Store
+.env
+.smoke
+.vite
+dist
+dist-electron
+node_modules
