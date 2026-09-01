@@ -46,7 +46,13 @@ const browser = await chromium.launch({
 async function recorrido(nombre, viewport, isMobile) {
   const ctx = await browser.newContext({ viewport, isMobile, hasTouch: isMobile, locale: 'es-MX' })
   const page = await ctx.newPage()
-  page.on('console', (m) => { if (m.type() === 'error') errores.push(`[${nombre}] ${m.text()}`) })
+  page.on('console', (m) => {
+    if (m.type() !== 'error') return
+    // Esta corrida es justo el escenario sin backend: el sondeo a /api/health
+    // falla a propósito y el navegador lo registra. No es un error de la app.
+    if ((m.location()?.url ?? '').includes('/api/health')) return
+    errores.push(`[${nombre}] ${m.text()}`)
+  })
   page.on('pageerror', (e) => errores.push(`[${nombre}] ${e.message}`))
 
   const captura = (n) => page.screenshot({ path: `${OUT}/${nombre}-${n}.png` })
@@ -82,6 +88,11 @@ async function recorrido(nombre, viewport, isMobile) {
   await page.getByRole('button', { name: 'Terminar consulta' }).click()
   await page.waitForSelector('text=Noa está escribiendo la nota')
   await page.waitForSelector('text=Nota generada automáticamente', { timeout: 20000 })
+  // Sin backend la nota debe venir del guion local, y decirlo.
+  const cuerpo = await page.locator('body').innerText()
+  if (!cuerpo.includes('Nota de demostración')) {
+    errores.push(`[${nombre}] sin backend no se avisó que la nota es de demostración`)
+  }
   await captura('5-nota-generada')
 
   await page.getByRole('button', { name: 'Firmar nota' }).click()

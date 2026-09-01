@@ -7,6 +7,7 @@ import { useRecorder } from '../lib/useRecorder'
 import { useStore } from '../state/store'
 import { pickCase } from '../lib/cases'
 import { ETAPAS, emptyNote, generateNote, type EtapaGeneracion } from '../lib/engine'
+import { useSpeech } from '../lib/speech'
 import { mmss } from '../lib/format'
 import type { TranscriptLine } from '../lib/types'
 import {
@@ -25,20 +26,28 @@ export function Record() {
   const [motivo, setMotivo] = useState('')
   const [etapa, setEtapa] = useState<EtapaGeneracion>('transcribiendo')
 
-  const rec = useRecorder()
-  const guion = useMemo(() => pickCase(motivo), [motivo])
-  const consultaIdRef = useRef<string | null>(null)
+  const [fallo, setFallo] = useState<string | null>(null)
 
-  // La transcripción se revela conforme avanza el cronómetro de la grabación.
+  const rec = useRecorder()
+  const grabando = fase === 'grabando' && rec.estado === 'grabando'
+  const habla = useSpeech(grabando, rec.segundos)
+  const guion = useMemo(() => pickCase(motivo), [motivo])
+
+  // Con reconocimiento de voz la transcripción es real; sin él (navegador sin
+  // soporte o permiso negado) se reproduce un guion para no dejar la pantalla muda.
+  const usandoHablaReal = habla.soportado && rec.usandoMicReal
   const lineas: TranscriptLine[] = useMemo(
-    () => guion.transcript.filter((l) => l.t <= rec.segundos),
-    [guion, rec.segundos],
+    () =>
+      usandoHablaReal
+        ? habla.lineas
+        : guion.transcript.filter((l) => l.t <= rec.segundos),
+    [usandoHablaReal, habla.lineas, guion, rec.segundos],
   )
 
   const finTranscript = useRef<HTMLDivElement>(null)
   useEffect(() => {
     finTranscript.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
-  }, [lineas.length])
+  }, [lineas.length, habla.parcial])
 
   const paciente = patients.find((p) => p.id === pacienteId)
 
@@ -48,8 +57,16 @@ export function Record() {
   }
 
   const terminar = async () => {
+    const capturada = lineas
     rec.detener()
+
+    if (capturada.length === 0) {
+      setFallo('No se capturó nada de la consulta. Revisa el micrófono e intenta de nuevo.')
+      return
+    }
+
     setFase('procesando')
+    setFallo(null)
 
     const consulta = addConsultation({
       patientId: pacienteId,
@@ -57,14 +74,27 @@ export function Record() {
       duracionSeg: rec.segundos,
       estado: 'procesando',
       motivo: motivo.trim() || guion.motivo,
-      transcript: guion.transcript.filter((l) => l.t <= rec.segundos),
+      transcript: capturada,
       note: emptyNote(),
     })
-    consultaIdRef.current = consulta.id
 
-    const note = await generateNote(motivo, consulta.transcript, setEtapa)
-    updateConsultation(consulta.id, { note, estado: 'borrador' })
-    nav(`/consulta/${consulta.id}?nueva=1`, { replace: true })
+    try {
+      const { note, revision, demo } = await generateNote(
+        motivo,
+        capturada,
+        setEtapa,
+        paciente,
+      )
+      updateConsultation(consulta.id, { note, revision, demo, estado: 'borrador' })
+      nav(`/consulta/${consulta.id}?nueva=1`, { replace: true })
+    } catch (e) {
+      // La consulta ya está guardada con su transcripción: se conserva como
+      // borrador para que el médico pueda escribir la nota a mano o reintentar.
+      updateConsultation(consulta.id, { estado: 'borrador' })
+      setFase('grabando')
+      setFallo(e instanceof Error ? e.message : 'No se pudo generar la nota.')
+      nav(`/consulta/${consulta.id}`, { replace: true })
+    }
   }
 
   const cancelar = () => {
@@ -210,14 +240,29 @@ export function Record() {
 
       <Waveform nivel={rec.nivel} activo={!pausado} alto={54} barras={40} />
 
-      {!rec.usandoMicReal && (
+      {!usandoHablaReal && (
         <p className="tiny muted center rec-nomic">
-          <IconAlert size={12} /> Sin acceso al micrófono: la sesión continúa en modo demostración.
+          <IconAlert size={12} />
+          {!rec.usandoMicReal
+            ? 'Sin acceso al micrófono: la sesión continúa en modo demostración.'
+            : 'Este navegador no transcribe voz: la sesión continúa en modo demostración.'}
+        </p>
+      )}
+      {habla.error && (
+        <p className="tiny center rec-nomic" style={{ color: 'var(--danger)' }}>
+          <IconAlert size={12} />
+          {habla.error}
+        </p>
+      )}
+      {fallo && (
+        <p className="tiny center rec-nomic" style={{ color: 'var(--danger)' }}>
+          <IconAlert size={12} />
+          {fallo}
         </p>
       )}
 
       <div className="rec-transcript scroll-y">
-        {lineas.length === 0 ? (
+        {lineas.length === 0 && !habla.parcial ? (
           <p className="small muted center" style={{ padding: '28px 12px' }}>
             La transcripción aparecerá aquí conforme hablen.
           </p>
@@ -225,11 +270,21 @@ export function Record() {
           lineas.map((l, i) => (
             <p key={i} className={`linea ${l.hablante}`}>
               <span className="tiny strong linea-quien">
-                {l.hablante === 'medico' ? 'Médico' : 'Paciente'}
+                {l.hablante === 'medico'
+                  ? 'Médico'
+                  : l.hablante === 'paciente'
+                    ? 'Paciente'
+                    : 'Consulta'}
               </span>
               <span className="small">{l.texto}</span>
             </p>
           ))
+        )}
+        {habla.parcial && (
+          <p className="linea desconocido">
+            <span className="tiny strong linea-quien">Escuchando</span>
+            <span className="small linea-parcial">{habla.parcial}</span>
+          </p>
         )}
         <div ref={finTranscript} />
       </div>

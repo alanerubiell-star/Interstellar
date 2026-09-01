@@ -13,45 +13,30 @@ export interface Patient {
   createdAt: string
 }
 
-export interface SignosVitales {
-  ta?: string       // tensión arterial, mmHg
-  fc?: string       // frecuencia cardiaca, lpm
-  fr?: string       // frecuencia respiratoria, rpm
-  temp?: string     // °C
-  sato2?: string    // %
-  peso?: string     // kg
-  talla?: string    // m
-}
+/**
+ * La nota clínica y sus partes se derivan del esquema compartido con el backend
+ * (`noteSchema.ts`), que es también el esquema de salida estructurada del modelo.
+ * No redeclarar estas formas aquí: cambiarían sin que el servidor se entere.
+ */
+import type { ClinicalNote, NoteReview } from './noteSchema'
 
-export interface Diagnostico {
-  cie10: string
-  texto: string
-}
-
-export interface Medicamento {
-  farmaco: string
-  dosis: string
-  via: string
-  frecuencia: string
-  duracion: string
-}
-
-/** Estructura alineada a la nota de consulta de la NOM-004-SSA3-2012. */
-export interface ClinicalNote {
-  motivo: string
-  padecimientoActual: string
-  exploracionFisica: string
-  signosVitales: SignosVitales
-  diagnosticos: Diagnostico[]
-  plan: string[]
-  indicaciones: string[]
-  receta: Medicamento[]
-  pronostico: string
-}
+export type {
+  SignosVitales,
+  Diagnostico,
+  Medicamento,
+  ClinicalNote,
+  NoteReview,
+  NoteResponse,
+} from './noteSchema'
 
 export interface TranscriptLine {
   t: number                        // segundo dentro de la consulta
-  hablante: 'medico' | 'paciente'
+  /**
+   * 'desconocido' cuando la transcripción viene del navegador: la Web Speech API
+   * no separa hablantes. El modelo infiere quién habla por el contenido. Un STT
+   * de servidor con diarización sí puede entregar la etiqueta real.
+   */
+  hablante: 'medico' | 'paciente' | 'desconocido'
   texto: string
 }
 
@@ -66,6 +51,10 @@ export interface Consultation {
   motivo: string
   transcript: TranscriptLine[]
   note: ClinicalNote
+  /** Puntos que el modelo pide verificar antes de firmar. */
+  revision?: NoteReview
+  /** true si la nota vino de un guion local por falta de backend. */
+  demo?: boolean
   firmadaPor?: string
   firmadaEn?: string
 }

@@ -558,3 +558,13 @@
   transition: transform .2s cubic-bezier(.2,.8,.3,1);
 }
 .switch.on .switch-perilla { transform: translateX(19px); }
+
+/* Transcripción sin hablante identificado (voz del navegador). */
+.linea.desconocido { align-self: flex-start; max-width: 92%; }
+.linea.desconocido > .small { background: var(--surface-2); }
+.linea.desconocido .linea-quien { color: var(--ink-muted); }
+.linea-parcial { opacity: .62; font-style: italic; }
+
+/* Aviso de revisión previa a la firma. */
+.aviso-ambar { background: #FEF8EE; border-color: #F3E2C7; }
+.lista-alertas li::marker { color: var(--warn); }

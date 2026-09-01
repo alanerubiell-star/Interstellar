@@ -31,8 +31,14 @@ CIE-10, plan, indicaciones al paciente, receta y pronóstico.
 
 ```bash
 npm install
-npm run dev          # http://localhost:5173
+cp .env.example .env          # y pon tu ANTHROPIC_API_KEY
+
+npm run server                # backend en :8787
+npm run dev                   # front en :5173 (hace proxy de /api)
 ```
+
+Sin `ANTHROPIC_API_KEY` la app arranca igual y funciona en **modo demostración**:
+las notas salen de guiones clínicos locales y la pantalla lo dice explícitamente.
 
 ### Escritorio (Electron — macOS, Windows, Linux)
 
@@ -78,13 +84,14 @@ detenida o nota firmada que siga siendo editable. Deja capturas en `.smoke/`.
 
 ```
 src/
-  lib/         dominio: tipos, formato, motor de notas, guiones clínicos, micrófono
+  lib/         dominio: tipos, esquema de la nota, cliente del backend, micrófono, voz
   state/       store en React Context con persistencia en localStorage
   components/  marco responsivo, iconos, onda de audio, primitivas de UI
   screens/     una pantalla por ruta
   styles/      tokens de marca + hoja global + estilos de la app
+server/        backend: generación de la nota con Claude
 electron/      contenedor de escritorio
-scripts/       prueba de humo end-to-end
+scripts/       pruebas de contrato, integración y humo
 ```
 
 **Un solo layout responsivo**, sin rutas duplicadas: `AppShell` cambia de riel
@@ -92,21 +99,77 @@ lateral (≥900 px) a barra inferior con botón central de grabación (<900 px).
 Se usa `HashRouter` para que la misma build sirva en web, PWA instalada y
 `file://` dentro de Electron.
 
-### Dónde se conecta la IA real
+### El backend
 
-Toda la generación pasa por una sola función:
-
-```ts
-// src/lib/engine.ts
-generateNote(motivo, transcript, onEtapa): Promise<ClinicalNote>
+```
+server/
+  index.ts       rutas HTTP, CORS, validación de entrada, límite de peticiones
+  claude.ts      cliente de Anthropic y generación de la nota
+  prompt.ts      prompt de sistema clínico y armado del mensaje
+  transcribe.ts  punto de conexión para un STT de servidor
+  env.ts         configuración y validación de arranque
+  log.ts         registro que nunca imprime contenido clínico
 ```
 
-En esta versión devuelve notas desde guiones clínicos locales
-(`src/lib/cases.ts`) y simula el progreso por etapas. Para conectar el backend
-real basta sustituir el cuerpo de esa función conservando la firma y el callback
-de progreso; la UI no cambia. La captura de micrófono en `src/lib/useRecorder.ts`
-ya es real (Web Audio + `getUserMedia`) y el nivel que alimenta la onda proviene
-del audio del dispositivo.
+`POST /api/note` recibe la transcripción y el contexto del paciente y devuelve la
+nota más una revisión. `GET /api/health` reporta modelo y credenciales.
+
+**Generación.** Claude Opus 5 con pensamiento adaptativo y **salida estructurada**:
+el esquema de `src/lib/noteSchema.ts` viaja como contrato, así que la respuesta
+siempre parsea y el front no adivina formas. Ese mismo archivo es de donde el
+cliente deriva sus tipos, de modo que backend y frontend no pueden divergir.
+
+**Revisión antes de firmar.** Junto a la nota el modelo devuelve `confianza` y
+`alertas`: medicamentos que chocan con una alergia del expediente, dosis que no
+quedaron claras en el audio, diagnósticos sin sustento. Se muestran en la nota y
+sólo desaparecen al firmarla.
+
+**No inventar.** La instrucción central del prompt es que un dato inventado en un
+expediente es un error clínico grave: si un signo vital no se dijo en voz alta, el
+campo queda vacío en vez de estimarse; si no hubo exploración física, no se
+redacta una normal genérica. `npm run smoke:api` verifica justamente eso contra la
+API real.
+
+**Costo.** El prompt de sistema va marcado con `cache_control`, así que entre
+consultas sólo se paga el diálogo nuevo. El servidor registra
+`cacheLeido`/`cacheEscrito` por petición para poder vigilarlo. `NOA_EFFORT` permite
+barrer niveles de esfuerzo: Opus 5 rinde bien en `low` y `medium`, pero conviene
+medirlo con evaluación clínica propia antes de bajarlo.
+
+**Resiliencia.** Los clasificadores de seguridad pueden declinar contenido clínico
+(fármacos, toxicología, autolesión). Se envía `fallbacks: "default"`, que reintenta
+la petición en otro modelo del lado del servidor en vez de dejar al médico sin
+nota. Si el modelo aun así declina, la app lo dice en lugar de inventar.
+
+### Transcripción
+
+La transcripción es **real y ocurre en el dispositivo** con la Web Speech API
+(`src/lib/speech.ts`), en `es-MX`. No requiere proveedor externo ni costo
+adicional.
+
+Tiene un límite: **no separa hablantes.** Las frases llegan marcadas como
+`desconocido` y el modelo deduce por el contenido quién habla. Funciona bien —
+quien pregunta y explora es el médico — pero no es diarización de verdad.
+
+Para diarización real hace falta un STT de servidor. Anthropic no ofrece voz a
+texto, así que ese proveedor (Whisper, Deepgram, AssemblyAI o uno propio) es una
+**decisión aparte**, y con pacientes reales exige convenio de tratamiento de
+datos. El hueco ya está hecho: implementar la interfaz `Transcriptor` de
+`server/transcribe.ts` y registrarla.
+
+---
+
+## Pruebas
+
+| Comando | Qué hace | Cuesta dinero |
+|---|---|---|
+| `npm run typecheck` | Tipos de cliente y servidor | no |
+| `npm run contract` | Suplanta la API de Anthropic y verifica la petición saliente (modelo, betas, `fallbacks`, esquema, caché), la validación de entrada, el límite de peticiones y el caso sin credenciales | no |
+| `npm run smoke` | La app completa en móvil y escritorio, sin backend: comprueba que avise que la nota es de demostración | no |
+| `npm run smoke:backend` | Igual pero con backend: comprueba que lo que se pinta venga del servidor y que salga el panel de alertas | no |
+| `npm run smoke:api` | **Llama a la API real.** Verifica que el modelo respete el esquema y que no invente signos vitales ni exploraciones | **sí** |
+
+Las cuatro primeras corren sin credenciales y son las que deberían estar en CI.
 
 ---
 
@@ -115,9 +178,14 @@ del audio del dispositivo.
 Esta es una **versión de producto navegable y verificada**, todavía no apta para
 uso clínico real. Antes de tocar datos de pacientes reales falta:
 
-- **Backend**: transcripción y LLM sobre un servicio propio, con cifrado en
-  tránsito y en reposo. Hoy todo vive en `localStorage` del dispositivo.
-- **Cuentas y autenticación**: no hay login; la app asume un solo médico.
+- **Persistencia en servidor**: el backend genera notas pero no las guarda; el
+  expediente sigue viviendo en `localStorage` del dispositivo. Falta base de
+  datos con cifrado en reposo y respaldo.
+- **Cuentas y autenticación**: no hay login ni autorización; `/api/note` está
+  abierto a cualquiera que alcance el servidor. Sólo hay límite por IP.
+- **HTTPS y cabeceras**: desplegar tras TLS y fijar `frame-ancestors` por
+  cabecera HTTP (por `<meta>` el navegador la ignora).
+- **Diarización**: separar médico y paciente requiere un STT de servidor.
 - **Aviso de privacidad y consentimiento** conforme a la LFPDPPP, con registro
   del consentimiento del paciente antes de grabar.
 - **Firma electrónica avanzada** con validez legal (hoy la firma es un cambio de

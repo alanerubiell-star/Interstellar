@@ -8,27 +8,39 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc -b --noEmit",
+    "typecheck": "tsc -b --noEmit && tsc -p server/tsconfig.json",
     "desktop": "npm run build && electron .",
     "desktop:dev": "NOA_DEV_URL=http://localhost:5173 electron .",
     "mobile:sync": "npm run build && npx cap sync",
     "mobile:ios": "npm run build && npx cap sync ios && npx cap open ios",
     "mobile:android": "npm run build && npx cap sync android && npx cap open android",
-    "smoke": "npm run build && node scripts/smoke.mjs"
+    "smoke": "npm run build && node scripts/smoke.mjs",
+    "server": "tsx watch server/index.ts",
+    "server:start": "tsx server/index.ts",
+    "dev:full": "NOA_API_TARGET=http://127.0.0.1:8787 npm run dev",
+    "contract": "node scripts/contract.mjs",
+    "smoke:backend": "node scripts/smoke-backend.mjs",
+    "smoke:api": "tsx scripts/smoke-api.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.122.0",
+    "express": "^5.2.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.26.2"
+    "react-router-dom": "^6.26.2",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.0",
     "@capacitor/core": "^8.5.0",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.4.0",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.2",
     "electron": "^33.4.11",
     "playwright": "^1.62.1",
+    "tsx": "^4.23.13",
     "typescript": "^5.6.3",
     "vite": "^5.4.9"
   },

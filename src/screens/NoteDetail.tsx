@@ -138,6 +138,33 @@ export function NoteDetail() {
           </div>
         )}
 
+        {consulta.demo && (
+          <div className="card aviso aviso-ambar">
+            <IconAlert size={18} style={{ flexShrink: 0, marginTop: 1, color: 'var(--warn)' }} />
+            <p className="small soft">
+              <strong>Nota de demostración.</strong> No hay servidor de Noa conectado, así que esta
+              nota proviene de un caso de ejemplo y no de la consulta grabada.
+            </p>
+          </div>
+        )}
+
+        {consulta.revision && consulta.revision.alertas.length > 0 && !bloqueado && (
+          <section className="card aviso aviso-ambar stack gap-8">
+            <div className="row gap-8">
+              <IconAlert size={17} style={{ flexShrink: 0, color: 'var(--warn)' }} />
+              <span className="small strong">Verifica antes de firmar</span>
+              <span className="chip chip-amber" style={{ marginLeft: 'auto' }}>
+                Confianza {consulta.revision.confianza}
+              </span>
+            </div>
+            <ul className="lista-lectura lista-alertas">
+              {consulta.revision.alertas.map((a, i) => (
+                <li key={i} className="small">{a}</li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         {/* --- cabecera del paciente --- */}
         <div className="card nota-head">
           <Avatar nombre={paciente?.nombre ?? 'Sin asignar'} size={46} />
