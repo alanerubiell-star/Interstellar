@@ -31,6 +31,12 @@ public class LineaDeTiempo {
             "Mejor en programación y en tareas largas con agentes."),
         new Evento(YearMonth.of(2025, 10), "Claude Haiku 4.5",
             "Un modelo pequeño y rápido con gran capacidad."),
+        new Evento(YearMonth.of(2026, 4), "Claude Mythos Preview",
+            "Un modelo por encima de Opus; solo con acceso restringido, vía Project Glasswing."),
+        new Evento(YearMonth.of(2026, 6), "Claude Fable 5 y Mythos 5",
+            "El mismo modelo: Fable para todos con salvaguardas, Mythos con acceso restringido."),
+        new Evento(YearMonth.of(2026, 9), "Claude Fable 5.1 y Mythos 5.1",
+            "Mejor en programación y trabajo de conocimiento, y más barato que Fable 5."),
         new Evento(YearMonth.of(2026, 9), "Hoy",
             "Escribo esta línea de tiempo en Java para el repositorio Interstellar.")
     );
