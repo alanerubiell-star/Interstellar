@@ -49,7 +49,7 @@ Una app nativa y ligera (Swift + WebKit, ~150 KB) que abre **claude.ai en su pro
 
 ## Alternativas sin compilar nada
 
-1. **Google Chrome o Microsoft Edge como app** (siguen siendo compatibles con Monterey):
+1. **Google Chrome o Microsoft Edge como app** (la última versión que se instale en Monterey sirve):
    abre `claude.ai`, luego menú ⋮ → *Transmitir, guardar y compartir* → **Instalar página como app…** (en Edge: *Aplicaciones → Instalar este sitio como una aplicación*).
    Queda una app "Claude" en `~/Applications/Chrome Apps`, con ventana propia e icono en el Dock. El login con Google funciona sin problemas.
 2. **Descarga directa de la app oficial** (el enlace puede cambiar; si falla, usa claude.ai/download):
