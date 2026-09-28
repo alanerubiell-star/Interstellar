@@ -1,0 +1,17 @@
+{
+  "name": "Noa Notes",
+  "short_name": "Noa Notes",
+  "description": "Menos escritura, más tiempo para tus pacientes.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#FBFBFD",
+  "theme_color": "#10B2A5",
+  "categories": ["medical", "productivity"],
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

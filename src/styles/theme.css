@@ -1,0 +1,45 @@
+/* Noa Notes — design tokens extracted from the brand sheet */
+:root {
+  --teal-600: #0E9E93;
+  --teal-500: #10B2A5;
+  --teal-400: #18C4B8;
+  --teal-100: #D6F2EF;
+  --teal-050: #EAF8F6;
+
+  --navy-900: #0B2740;
+  --navy-700: #0D3455;
+  --navy-500: #2C5170;
+
+  --ink:        var(--navy-900);
+  --ink-soft:   #46617A;
+  --ink-muted:  #7D93A6;
+
+  --bg:         #FBFBFD;
+  --surface:    #FFFFFF;
+  --surface-2:  #EEF6F9;
+  --line:       #E3EAF0;
+  --line-soft:  #EFF3F7;
+
+  --danger:  #D9534F;
+  --warn:    #E9A13B;
+  --ok:      var(--teal-500);
+
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 18px;
+  --r-xl: 26px;
+  --r-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgba(11, 39, 64, .06), 0 1px 3px rgba(11, 39, 64, .04);
+  --shadow-md: 0 4px 16px rgba(11, 39, 64, .08);
+  --shadow-lg: 0 18px 48px rgba(11, 39, 64, .12);
+
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+
+  /* responsive shell metrics */
+  --rail-w: 248px;
+  --tabbar-h: 62px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-t: env(safe-area-inset-top, 0px);
+}
