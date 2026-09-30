@@ -2,7 +2,7 @@
 <html lang="es-MX"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GenPat Pharma — Farmacia en línea en Puebla | Catálogo con precios</title>
+<title>GenPat Pharma — Farmacia en San Andrés Cholula, Puebla | Catálogo con precios</title>
 <meta name="description" content="Farmacia en línea en Puebla: 209 medicamentos e insumos con principio activo, presentación y precio a la vista. Pedidos por WhatsApp y entrega a domicilio en Puebla y zona conurbada.">
 <link rel="canonical" href="https://genpat-pharma.netlify.app/">
 <link rel="icon" type="image/png" href="icono.png">
@@ -117,6 +117,7 @@
   .art-c1{left:-14px;bottom:34px}
   .art-c2{right:-10px;top:26px}
   @media (max-width:520px){.art-c1{left:6px;bottom:12px}.art-c2{right:4px;top:10px}}
+  @media (max-width:640px){.art{display:none}}
 
   /* ---------- barra de confianza ---------- */
   .trust-in{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line)}
@@ -225,6 +226,7 @@
   .cat{padding-top:34px}
   .cat-head{display:flex;align-items:baseline;gap:14px;border-bottom:2px solid var(--navy-2);padding-bottom:8px}
   .cat-head h3{font-size:1.13rem;letter-spacing:-.025em}
+  .ver-mas{margin-top:14px;width:100%;font-size:.9rem;padding:11px 18px;white-space:normal}
   .cat-head .n{font-family:var(--mono);font-size:.75rem;color:var(--ink-3);margin-left:auto}
   .cat-desc{font-size:.85rem;color:var(--ink-3);padding-top:8px}
   .rows{display:grid;grid-template-columns:1fr 1fr;column-gap:48px;margin-top:4px}
@@ -293,6 +295,13 @@
   .loc-card b{display:block;font-size:1.1rem;color:var(--navy)}
   .loc-card span{display:block;color:var(--ink-2);font-size:.95rem}
   .loc-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+  .loc-hours dl{display:grid;grid-template-columns:auto 1fr;gap:2px 18px;margin:6px 0 0;font-size:.95rem}
+  .loc-hours dt{color:var(--ink-2)}
+  .loc-hours dd{margin:0;color:var(--navy);font-weight:600;font-variant-numeric:tabular-nums}
+  .loc-card + .loc-card{margin-top:12px}
+  .sanitario{font-size:.8rem;line-height:1.7;color:var(--ink-2);margin-top:18px;padding:12px 16px;
+    background:var(--white);border:1px solid var(--line);border-radius:var(--r)}
+  .sanitario b{color:var(--navy)}
   .loc-map{position:relative;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);
     box-shadow:var(--sh);aspect-ratio:4/3;background:var(--tint)}
   .loc-map iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
@@ -397,8 +406,8 @@
     "Thursday",
     "Friday"
    ],
-   "opens": "09:00",
-   "closes": "19:00"
+   "opens": "08:00",
+   "closes": "18:00"
   },
   {
    "@type": "OpeningHoursSpecification",
@@ -406,7 +415,7 @@
     "Saturday"
    ],
    "opens": "09:00",
-   "closes": "14:00"
+   "closes": "15:00"
   }
  ],
  "contactPoint": [
@@ -4915,11 +4924,11 @@
   <section class="hero">
     <div class="wrap hero-grid">
       <div>
-        <p class="eyebrow">Farmacia en línea · Medicina interna y especialidad</p>
+        <p class="eyebrow">Farmacia · Medicina interna y especialidad</p>
         <h1>Tu tratamiento,<em>al precio justo.</em></h1>
         <p class="lede">209 medicamentos e insumos con principio activo, presentación y precio a la vista.
-          Entregamos a domicilio en <b>Puebla, Cholula, San Andrés y Amozoc</b>. Busca lo que te recetaron,
-          compara contra lo que pagas hoy y pídelo por WhatsApp.</p>
+          Visítanos en <a href="#ubicacion"><b>Torres Médicas II, San Andrés Cholula</b></a> o recibe a domicilio
+          en Puebla y zona conurbada. Busca lo que te recetaron, compara contra lo que pagas hoy y pídelo por WhatsApp.</p>
         <form class="hero-search" id="heroForm">
           <input id="qHero" type="search" autocomplete="off" aria-label="Buscar medicamento"
                  placeholder="Ej. losartán, Klarix, jarabe…">
@@ -5234,6 +5243,14 @@
           <span>Anillo Periférico Ecológico 3507, Tlaxcalancingo</span>
           <span>San Andrés Cholula, Puebla · C.P. 72821</span>
         </div>
+        <div class="loc-card loc-hours">
+          <b>Horario de atención</b>
+          <dl>
+            <dt>Lunes a viernes</dt><dd>8:00 a 18:00 h</dd>
+            <dt>Sábado</dt><dd>9:00 a 15:00 h</dd>
+            <dt>Domingo</dt><dd>Cerrado</dd>
+          </dl>
+        </div>
         <div class="loc-actions">
           <a class="btn" href="https://www.google.com/maps/search/?api=1&amp;query=Torres+M%C3%A9dicas+Angel%C3%B3polis+II%2C+Anillo+Perif%C3%A9rico+Ecol%C3%B3gico+3507%2C+San+Andr%C3%A9s+Cholula%2C+Puebla" target="_blank" rel="noopener">Cómo llegar</a>
           <a class="btn-ghost btn-sm" style="padding:11px 18px;font-size:.9rem" href="https://wa.me/522202048163?text=Hola%2C%20quiero%20pasar%20a%20Torres%20M%C3%A9dicas%20II%20por%20mi%20pedido." target="_blank" rel="noopener">Avisar por WhatsApp</a>
@@ -5258,9 +5275,15 @@
         <a href="#pedido">Cómo pedir</a>
         <a href="#preguntas">Preguntas</a>
         <a href="#ubicacion">Ubicación</a>
+        <a href="aviso-privacidad.html">Aviso de privacidad</a>
         <a href="#contacto">Contacto</a>
       </nav>
     </div>
+    <p class="sanitario">
+      <b>Aviso de funcionamiento COFEPRIS:</b> 2621055006D00139 ·
+      <b>Responsable sanitario:</b> Dra. Sandra Hernandez Cabañas ·
+      Torres Médicas II, Consultorio 801, Piso 8, Anillo Periférico Ecológico 3507, San Andrés Cholula, Puebla.
+    </p>
     <p class="aviso"><b>Aviso importante.</b> Precios en pesos mexicanos, vigentes a septiembre de 2026 y
       sujetos a cambio sin previo aviso. Sujeto a disponibilidad de inventario. Este catálogo tiene fines
       informativos y <b>no sustituye la consulta médica ni la indicación de un profesional de la salud</b>.
@@ -5285,6 +5308,7 @@
         qEl = $("q"), rxEl = $("rxToggle");
 
   let filtroCat = "todas", soloRx = false;
+  const LIMITE = 6, abiertas = new Set();
 
   const norm = s => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -5430,10 +5454,14 @@
       const ps = c.productos.filter(p => (!soloRx || p.rx) && (!q || p._k.includes(q)));
       if (!ps.length) return "";
       visibles += ps.length;
+      // Sin búsqueda ni filtro, cada categoría muestra solo los primeros productos
+      const corto = !q && !soloRx && filtroCat === "todas" && !abiertas.has(i) && ps.length > LIMITE;
+      const vis = corto ? ps.slice(0, LIMITE) : ps;
       return `<section class="cat">
         <div class="cat-head"><h3>${esc(c.titulo)}</h3><span class="n">${ps.length} ${ps.length === 1 ? "producto" : "productos"}</span></div>
         <p class="cat-desc">${esc(c.desc)}</p>
-        <div class="rows">${ps.map(fila).join("")}</div>
+        <div class="rows">${vis.map(fila).join("")}</div>
+        ${corto ? `<button class="ver-mas btn-ghost" type="button" data-abrir="${i}">Ver los ${ps.length} productos de ${esc(c.titulo)}</button>` : ""}
       </section>`;
     }).join("");
     emptyEl.hidden = visibles > 0;
@@ -5441,6 +5469,11 @@
       ? `${total} productos · ${CATALOGO.length} categorías`
       : `${visibles} de ${total} productos`;
   }
+
+  lista.addEventListener("click", e => {
+    const b = e.target.closest("[data-abrir]"); if (!b) return;
+    abiertas.add(+b.dataset.abrir); render();
+  });
 
   render();
 </script>
