@@ -151,11 +151,24 @@
     stroke-linecap:round;stroke-linejoin:round}
   .cat-tile b{font-size:.95rem;font-weight:700;color:var(--navy);letter-spacing:-.02em;line-height:1.3}
   .cat-tile span{font-family:var(--mono);font-size:.72rem;color:var(--ink-3)}
+  @media (max-width:640px){
+    .cats{gap:10px}
+    .cat-tile{display:grid;grid-template-columns:36px 1fr;column-gap:10px;row-gap:2px;align-items:center;padding:12px}
+    .cat-tile .ic{width:36px;height:36px;grid-row:1/3}
+    .cat-tile svg{width:18px;height:18px}
+    .cat-tile b{font-size:.84rem}
+    .cat-tile span{font-size:.66rem}
+  }
 
   /* destacados */
   .prods{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-  @media (max-width:900px){.prods{grid-template-columns:repeat(2,1fr)}}
-  @media (max-width:560px){.prods{grid-template-columns:1fr}}
+  @media (max-width:900px){
+    .prods{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;
+      margin:0 -24px;padding:4px 24px 14px;scroll-padding:0 24px;scrollbar-width:none}
+    .prods::-webkit-scrollbar{display:none}
+    .prods .pcard{flex:0 0 44%;scroll-snap-align:start}
+  }
+  @media (max-width:560px){.prods .pcard{flex-basis:80%}}
   .pcard{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:20px;
     display:flex;flex-direction:column;gap:6px;box-shadow:var(--sh-sm)}
   .pcard:hover{box-shadow:var(--sh)}
@@ -225,12 +238,25 @@
   .rx-toggle[aria-pressed="true"] .box::after{content:"";width:7px;height:4px;border-left:2px solid #fff;
     border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px)}
 
-  .cat{padding-top:34px}
-  .cat-head{display:flex;align-items:baseline;gap:14px;border-bottom:2px solid var(--navy-2);padding-bottom:8px}
-  .cat-head h3{font-size:1.13rem;letter-spacing:-.025em}
-  .ver-mas{margin-top:14px;width:100%;font-size:.9rem;padding:11px 18px;white-space:normal}
-  .cat-head .n{font-family:var(--mono);font-size:.75rem;color:var(--ink-3);margin-left:auto}
+  .cat{scroll-margin-top:210px}
+  .cat-head{margin:0;border-bottom:1px solid var(--line)}
+  .cat-head button{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;gap:14px;
+    padding:17px 4px;cursor:pointer;font-family:var(--sans);font-size:1.05rem;font-weight:700;
+    letter-spacing:-.025em;color:var(--navy)}
+  .cat-head button:hover .t{color:var(--blue)}
+  .cat-head button:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+  .cat-head button:disabled{cursor:default}
+  .cat-head .n{font-family:var(--mono);font-size:.75rem;font-weight:500;letter-spacing:0;color:var(--ink-3);
+    margin-left:auto;white-space:nowrap}
+  .cat-head .chev{width:9px;height:9px;border-right:2px solid var(--ink-3);border-bottom:2px solid var(--ink-3);
+    transform:rotate(45deg) translateY(-3px);transition:transform .15s ease;flex:none}
+  .cat-head button:disabled .chev{display:none}
+  .cat.abierta .cat-head{border-bottom:2px solid var(--navy-2)}
+  .cat.abierta .chev{transform:rotate(-135deg) translateY(-2px)}
+  .cat.abierta{padding-bottom:22px}
   .cat-desc{font-size:.85rem;color:var(--ink-3);padding-top:8px}
+  #lista{margin-top:10px}
+  @media (max-width:640px){#catalogo .legend{display:none}}
   .rows{display:grid;grid-template-columns:1fr 1fr;column-gap:48px;margin-top:4px}
   @media (max-width:840px){.rows{grid-template-columns:1fr}}
   .row{display:grid;grid-template-columns:1fr auto;gap:5px 18px;align-items:start;padding:14px 0;
@@ -262,6 +288,12 @@
   .step .num{width:30px;height:30px;border-radius:50%;background:var(--navy);color:#fff;flex:none;
     display:grid;place-items:center;font-family:var(--mono);font-size:.8rem;font-weight:600}
   .step h4{font-size:1rem;letter-spacing:-.02em}
+  @media (max-width:640px){
+    .how .chat{display:none}
+    .steps{gap:8px;margin-top:18px}
+    .step{padding:12px 14px;gap:12px}
+    .step p{font-size:.85rem}
+  }
   .step p{font-size:.9rem;color:var(--ink-2);margin-top:3px}
 
   .chat{background:#EAF1F8;border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--sh)}
@@ -301,6 +333,7 @@
   .loc-hours dt{color:var(--ink-2)}
   .loc-hours dd{margin:0;color:var(--navy);font-weight:600;font-variant-numeric:tabular-nums}
   .loc-card + .loc-card{margin-top:12px}
+  .loc-card .zonas{margin-top:6px;font-size:.88rem;color:var(--navy);font-weight:600}
   .sanitario{font-size:.8rem;line-height:1.7;color:var(--ink-2);margin-top:18px;padding:12px 16px;
     background:var(--white);border:1px solid var(--line);border-radius:var(--r)}
   .sanitario b{color:var(--navy)}
@@ -5080,7 +5113,7 @@
           <svg class="mag" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2a8 8 0 1 0 4.9 14.3l5.4 5.4 1.4-1.4-5.4-5.4A8 8 0 0 0 10 2Zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12Z"/></svg>
           <input id="q" type="search" autocomplete="off" placeholder="Buscar medicamento, principio activo o presentación…" aria-label="Buscar en el catálogo">
         </label>
-        <div class="chips" id="chips" role="group" aria-label="Filtrar por categoría"></div>
+        <div class="chips" id="chips" role="group" aria-label="Filtrar por categoría" hidden></div>
         <div class="toolbar-foot">
           <p class="count" id="count" role="status"></p>
           <button class="rx-toggle" id="rxToggle" type="button" aria-pressed="false">
@@ -5102,7 +5135,7 @@
       <div class="wrap how">
         <div>
           <p class="eyebrow">Cómo hacer tu pedido</p>
-          <h2>Tres pasos, sin carrito ni pago por adelantado.</h2>
+          <h2>Tres pasos, sin pago por adelantado.</h2>
           <div class="steps">
             <div class="step">
               <span class="num">1</span>
@@ -5207,37 +5240,14 @@
       </div>
     </div>
   </section>
-  <div class="band-tint">
-    <section class="section" id="zonas">
-      <div class="wrap">
-        <p class="eyebrow">Cobertura</p>
-        <h2>Dónde entregamos</h2>
-        <p class="muted" style="margin-top:12px;max-width:60ch">
-          Entrega el mismo día en Puebla capital y zona conurbada cuando confirmas antes de las 4:00 p.m.
-          El costo de envío se te informa junto con el total, antes de que pagues.
-        </p>
-        <ul style="margin-top:22px;columns:2;column-gap:24px;list-style:none;padding:0;font-size:.95rem;color:var(--ink-2);line-height:2">
-          <li>Puebla capital</li>
-          <li>San Andrés Cholula</li>
-          <li>San Pedro Cholula</li>
-          <li>Amozoc</li>
-          <li>Cuautlancingo</li>
-          <li>Coronango</li>
-          <li>Zona Angelópolis</li>
-          <li>Resto del estado: por paquetería</li>
-        </ul>
-      </div>
-    </section>
-  </div>
-
   <section class="section" id="ubicacion">
     <div class="wrap loc-grid">
       <div>
-        <p class="eyebrow">Ubicación</p>
+        <p class="eyebrow">Ubicación y entregas</p>
         <h2>Dónde estamos</h2>
         <p class="muted" style="margin-top:12px;max-width:52ch">
-          Además de entregar a domicilio, puedes encontrarnos en Torres Médicas II, en la zona Angelópolis.
-          Escríbenos por WhatsApp antes de venir para tener tu pedido listo.
+          Recoge en Torres Médicas II, zona Angelópolis, o recibe a domicilio. Escríbenos por WhatsApp
+          antes de venir para tener tu pedido listo.
         </p>
         <div class="loc-card">
           <b>Torres Médicas II</b>
@@ -5252,6 +5262,13 @@
             <dt>Sábado</dt><dd>9:00 a 15:00 h</dd>
             <dt>Domingo</dt><dd>Cerrado</dd>
           </dl>
+        </div>
+        <div class="loc-card" id="zonas">
+          <b>Entrega a domicilio</b>
+          <span>Mismo día en Puebla capital y zona conurbada si confirmas antes de las 4:00 p.m. El costo de
+            envío se te informa junto con el total, antes de pagar.</span>
+          <span class="zonas">Puebla capital · San Andrés Cholula · San Pedro Cholula · Amozoc · Cuautlancingo ·
+            Coronango · Zona Angelópolis · Resto del estado por paquetería</span>
         </div>
         <div class="loc-actions">
           <a class="btn" href="https://www.google.com/maps/search/?api=1&amp;query=Torres+M%C3%A9dicas+Angel%C3%B3polis+II%2C+Anillo+Perif%C3%A9rico+Ecol%C3%B3gico+3507%2C+San+Andr%C3%A9s+Cholula%2C+Puebla" target="_blank" rel="noopener">Cómo llegar</a>
@@ -5310,7 +5327,7 @@
         qEl = $("q"), rxEl = $("rxToggle");
 
   let filtroCat = "todas", soloRx = false;
-  const LIMITE = 6, abiertas = new Set();
+  const abiertas = new Set();
 
   const norm = s => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -5407,11 +5424,14 @@
     aplicarCat(b.dataset.cat, false);
   });
 
+  // Abre el grupo de esa categoría en el catálogo (acordeón) y lleva al usuario ahí
   function aplicarCat(id, scroll = true) {
-    filtroCat = id;
-    chipsEl.querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", x.dataset.cat === id));
+    if (id === "todas") { render(); return; }
+    const i = +id.slice(1);
+    abiertas.add(i);
     render();
-    if (scroll) document.getElementById("catalogo").scrollIntoView({ behavior: "smooth", block: "start" });
+    const el = document.getElementById("cat-" + i);
+    if (scroll && el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   rxEl.addEventListener("click", () => { soloRx = !soloRx; rxEl.setAttribute("aria-pressed", soloRx); render(); });
@@ -5450,31 +5470,35 @@
 
   function render() {
     const q = norm(qEl.value.trim());
+    const filtrando = !!q || soloRx;
     let visibles = 0;
     lista.innerHTML = CATALOGO.map((c, i) => {
       if (filtroCat !== "todas" && filtroCat !== "c" + i) return "";
       const ps = c.productos.filter(p => (!soloRx || p.rx) && (!q || p._k.includes(q)));
       if (!ps.length) return "";
       visibles += ps.length;
-      // Sin búsqueda ni filtro, cada categoría muestra solo los primeros productos
-      const corto = !q && !soloRx && filtroCat === "todas" && !abiertas.has(i) && ps.length > LIMITE;
-      const vis = corto ? ps.slice(0, LIMITE) : ps;
-      return `<section class="cat">
-        <div class="cat-head"><h3>${esc(c.titulo)}</h3><span class="n">${ps.length} ${ps.length === 1 ? "producto" : "productos"}</span></div>
-        <p class="cat-desc">${esc(c.desc)}</p>
-        <div class="rows">${vis.map(fila).join("")}</div>
-        ${corto ? `<button class="ver-mas btn-ghost" type="button" data-abrir="${i}">Ver los ${ps.length} productos de ${esc(c.titulo)}</button>` : ""}
+      // Grupos cerrados por defecto; al buscar o filtrar Rx se muestran abiertos con los resultados
+      const abierta = filtrando || abiertas.has(i);
+      return `<section class="cat${abierta ? " abierta" : ""}" id="cat-${i}">
+        <h3 class="cat-head"><button type="button" data-toggle="${i}" aria-expanded="${abierta}"${filtrando ? " disabled" : ""}>
+          <span class="t">${esc(c.titulo)}</span>
+          <span class="n">${ps.length} ${ps.length === 1 ? "producto" : "productos"}</span>
+          <span class="chev" aria-hidden="true"></span>
+        </button></h3>
+        ${abierta ? `<p class="cat-desc">${esc(c.desc)}</p><div class="rows">${ps.map(fila).join("")}</div>` : ""}
       </section>`;
     }).join("");
     emptyEl.hidden = visibles > 0;
     countEl.textContent = visibles === total
-      ? `${total} productos · ${CATALOGO.length} categorías`
+      ? `${total} productos en ${CATALOGO.length} categorías`
       : `${visibles} de ${total} productos`;
   }
 
   lista.addEventListener("click", e => {
-    const b = e.target.closest("[data-abrir]"); if (!b) return;
-    abiertas.add(+b.dataset.abrir); render();
+    const b = e.target.closest("[data-toggle]"); if (!b || b.disabled) return;
+    const i = +b.dataset.toggle;
+    abiertas.has(i) ? abiertas.delete(i) : abiertas.add(i);
+    render();
   });
 
   render();
