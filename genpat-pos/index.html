@@ -102,6 +102,7 @@
     padding:2px 7px;border-radius:4px;white-space:nowrap;vertical-align:middle}
   .b-rx{background:var(--amber-soft);color:var(--amber)}
   .b-abx{background:#EEE8FB;color:#5B3FA8}
+  .b-ctrl{background:var(--red-soft);color:var(--red)}
   .b-ok{background:var(--green-soft);color:var(--green)}
   .b-warn{background:var(--amber-soft);color:var(--amber)}
   .b-bad{background:var(--red-soft);color:var(--red)}
@@ -191,6 +192,7 @@
     position:sticky;bottom:0;background:#fff}
   .box{border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;background:var(--bg)}
   .box.abx{background:#F6F3FD;border-color:#DCD2F4}
+  .box.ctrl{background:#FFF6F5;border-color:#F4C7C2}
   .err{color:var(--red);font-size:.82rem;font-weight:600}
   .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:#fff;
     padding:11px 18px;border-radius:var(--r);font-weight:600;font-size:.9rem;z-index:60;box-shadow:var(--sh);
@@ -204,7 +206,7 @@
   /* ---------- ticket impreso ---------- */
   #print{display:none}
   @media print{
-    @page{size:80mm auto;margin:3mm}
+    @page{margin:4mm}
     body{background:#fff}
     body > *:not(#print){display:none!important}
     #print{display:block;width:72mm;font-family:var(--mono);font-size:11px;color:#000;line-height:1.35}
@@ -212,6 +214,9 @@
     #print hr{border:0;border-top:1px dashed #000;margin:6px 0}
     #print .row{display:flex;justify-content:space-between;gap:6px}
     #print .big{font-size:14px;font-weight:700}
+    #print.hoja{width:auto;font-family:var(--sans);font-size:10px}
+    #print.hoja table{width:100%;border-collapse:collapse}
+    #print.hoja th,#print.hoja td{border:1px solid #999;padding:3px 5px;text-align:left;position:static;font-size:10px;color:#000}
   }
 </style>
 </head>
@@ -238,6 +243,7 @@
       <button class="tab" data-tab="gastos" role="tab">Gastos</button>
       <button class="tab" data-tab="reportes" role="tab">Reportes</button>
       <button class="tab" data-tab="antibioticos" role="tab">Antibióticos</button>
+      <button class="tab" data-tab="controlados" role="tab">Controlados</button>
       <button class="tab" data-tab="ajustes" role="tab">Ajustes</button>
     </nav>
     <button class="caja-pill off" id="cajaPill" type="button">Caja cerrada</button>
@@ -309,6 +315,7 @@
           <option value="sincosto">Sin costo capturado</option>
           <option value="abx">Antibióticos</option>
           <option value="rx">Con receta (Rx)</option>
+          <option value="ctrl">Controlados</option>
         </select>
       </div>
       <div class="tbl-wrap"><table>
@@ -397,6 +404,27 @@
     </table></div></div>
   </section>
 
+  <!-- ===================== CONTROLADOS ===================== -->
+  <section class="panel" id="p-controlados">
+    <div class="head">
+      <h2>Medicamentos controlados</h2><span class="sp"></span>
+      <select id="cProd" aria-label="Producto" style="width:auto;max-width:300px"></select>
+      <select id="cMes" aria-label="Mes" style="width:auto"></select>
+      <button class="btn ghost" type="button" data-act="export-ctrl">Exportar libro</button>
+      <button class="btn ghost" type="button" data-act="print-ctrl">Imprimir</button>
+    </div>
+    <div id="cBanner"></div>
+    <div class="kpis" id="cKpis"></div>
+    <div class="card" style="margin-bottom:16px"><div class="tbl-wrap" style="max-height:320px"><table>
+      <thead><tr><th>Producto</th><th>Fracción</th><th class="r">Existencia</th><th class="r">Saldo en libro</th><th></th></tr></thead>
+      <tbody id="cProds"></tbody></table></div></div>
+    <h3 style="margin:0 0 10px">Libro de control</h3>
+    <div class="card"><div class="tbl-wrap"><table>
+      <thead><tr><th>Fecha</th><th>Producto</th><th>Movimiento</th><th>Referencia</th><th class="r">Entrada</th><th class="r">Salida</th><th class="r">Saldo</th></tr></thead>
+      <tbody id="cBody"></tbody></table></div></div>
+    <div id="cSug" style="margin-top:16px"></div>
+  </section>
+
   <!-- ===================== AJUSTES ===================== -->
   <section class="panel" id="p-ajustes">
     <div class="head"><h2>Ajustes</h2></div>
@@ -408,6 +436,7 @@
         <label class="f">Teléfono / WhatsApp<input type="text" name="telefono"></label>
         <label class="f">Aviso de funcionamiento COFEPRIS<input type="text" name="cofepris"></label>
         <label class="f">Responsable sanitario<input type="text" name="responsable"></label>
+        <label class="f">Licencia sanitaria <span class="h">(necesaria para vender controlados)</span><input type="text" name="licencia" placeholder="Déjalo vacío si solo tienes aviso de funcionamiento"></label>
         <label class="f">Mensaje al pie del ticket<input type="text" name="pie"></label>
         <label class="f">Existencia mínima para alerta<input type="number" name="minimo" min="0" step="1"></label>
         <button class="btn" type="submit">Guardar</button>
@@ -465,6 +494,19 @@ const GASTO_CATS = {
 const PAGOS = ["Efectivo","Tarjeta de débito","Tarjeta de crédito","Transferencia"];
 const CANALES = ["Mostrador","WhatsApp","En línea","Interno"];
 
+// Medicamentos controlados (art. 226 de la Ley General de Salud, fracciones I a III)
+const FRACCIONES = {
+  I: "Fracción I — estupefaciente: receta especial con código de barras, se retiene",
+  II: "Fracción II — psicotrópico: la receta se retiene",
+  III: "Fracción III — psicotrópico: se surte hasta 3 veces en 6 meses, se sella y se devuelve"
+};
+// Principios activos que suelen ser controlados en México. Solo sirve para sugerir:
+// la fracción de cada producto la confirma el responsable sanitario.
+const POSIBLES_CONTROLADOS = ["morfina","fentanilo","oxicodona","hidromorfona","buprenorfina","metadona","tapentadol",
+  "codeina","meperidina","petidina","nalbufina","metilfenidato","lisdexanfetamina","alprazolam","clonazepam","diazepam",
+  "lorazepam","bromazepam","midazolam","triazolam","flunitrazepam","clobazam","clordiazepoxido","zolpidem","zopiclona",
+  "fenobarbital","fentermina","anfepramona","dietilpropion","mazindol","modafinilo","ketamina"];
+
 /* ---------------- utilidades ---------------- */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -492,9 +534,9 @@ function toast(msg, ms = 2600) {
 }
 
 /* ---------------- almacenamiento ---------------- */
-const KEYS = ["products", "sales", "gastos", "entradas", "cajas", "settings", "meta"];
+const KEYS = ["products", "sales", "gastos", "entradas", "cajas", "ctrlMovs", "settings", "meta"];
 const DEFAULTS = () => ({
-  products: [], sales: [], gastos: [], entradas: [], cajas: [],
+  products: [], sales: [], gastos: [], entradas: [], cajas: [], ctrlMovs: [],
   settings: {
     nombre: "GenPat Pharma",
     direccion: "Torres Médicas II, Consultorio 801, Piso 8. Anillo Periférico Ecológico 3507, San Andrés Cholula, Pue.",
@@ -502,7 +544,7 @@ const DEFAULTS = () => ({
     cofepris: "2621055006D00139",
     responsable: "Dra. Sandra Hernandez Cabañas",
     pie: "Gracias por su compra. Los medicamentos Rx se surten con receta médica.",
-    minimo: 1, pinHash: "", lastBackup: 0
+    licencia: "", minimo: 1, pinHash: "", lastBackup: 0
   },
   meta: { folio: 0 }
 });
@@ -551,6 +593,11 @@ async function load() {
 
 /* ---------------- consultas ---------------- */
 const prod = id => S.products.find(p => p.id === id);
+function badges(p, corto) {
+  if (p.ctrl) return `<span class="badge b-ctrl">Controlado F-${p.ctrl}</span>`;
+  if (p.abx) return `<span class="badge b-abx">${corto ? "Abx" : "Antibiótico"}</span>`;
+  return p.rx ? '<span class="badge b-rx">Rx</span>' : "";
+}
 const cajaAbierta = () => S.cajas.find(c => !c.cierre);
 const ventasValidas = () => S.sales.filter(s => !s.cancel);
 const costoVenta = s => s.items.reduce((a, i) => a + i.qty * (i.costo || 0), 0);
@@ -586,7 +633,7 @@ function irA(tab) {
 function render() {
   renderCajaPill();
   ({vender: renderVender, inventario: renderInventario, ventas: renderVentas, caja: renderCaja,
-    gastos: renderGastos, reportes: renderReportes, antibioticos: renderAbx, ajustes: renderAjustes})[tabActual]();
+    gastos: renderGastos, reportes: renderReportes, antibioticos: renderAbx, controlados: renderControlados, ajustes: renderAjustes})[tabActual]();
 }
 function renderCajaPill() {
   const c = cajaAbierta(), b = $("#cajaPill");
@@ -629,7 +676,7 @@ function renderResults() {
   $("#results").innerHTML = list.map(p => {
     const sm = semaforo(p);
     return `<button class="res" type="button" data-add="${p.id}">
-      <b>${esc(p.nombre)} ${p.abx ? '<span class="badge b-abx">Antibiótico</span>' : p.rx ? '<span class="badge b-rx">Rx</span>' : ""}</b>
+      <b>${esc(p.nombre)} ${badges(p)}</b>
       <span class="pr">${money(p.precio)}</span>
       <span class="meta">${esc(p.pa)} · ${esc(p.pres)}
         <span class="st">Exist. ${p.stock} · Cad. <span class="badge ${sm.cls}">${sm.txt}</span></span></span>
@@ -653,7 +700,7 @@ function renderCart() {
     const p = prod(l.pid);
     const warn = l.qty > p.stock ? `<span class="warn-line">Existencia registrada: ${p.stock}. Se venderá de todos modos.</span>` : "";
     return `<div class="line">
-      <span class="n">${esc(p.nombre)} ${p.abx ? '<span class="badge b-abx">Antibiótico</span>' : p.rx ? '<span class="badge b-rx">Rx</span>' : ""}
+      <span class="n">${esc(p.nombre)} ${badges(p)}
         <span class="sub">${esc(p.pa)} · ${esc(p.pres)}</span></span>
       <span class="tot">${money(l.qty * l.precio)}</span>
       <div class="ctl">
@@ -698,7 +745,19 @@ function abrirCobro() {
   if (!cart.length) return;
   const total = round2(cart.reduce((a, l) => a + l.qty * l.precio, 0));
   const hayAbx = cart.some(l => prod(l.pid).abx);
-  const hayRx = cart.some(l => { const p = prod(l.pid); return p.rx && !p.abx; });
+  const fr = [...new Set(cart.map(l => prod(l.pid).ctrl).filter(Boolean))].sort();
+  const hayCtrl = fr.length > 0;
+  const hayRx = cart.some(l => { const p = prod(l.pid); return p.rx && !p.abx && !p.ctrl; });
+  if (hayCtrl && !S.settings.licencia) {
+    modal(`<div class="m-h"><h2>No se puede vender</h2><button class="x" type="button" data-close aria-label="Cerrar">✕</button></div>
+      <div class="m-b"><p style="margin:0">La venta incluye un <b>medicamento controlado</b>. Para surtir medicamentos de las fracciones I, II y III
+        se necesita <b>licencia sanitaria</b> (no basta el aviso de funcionamiento) y libro de control autorizado por COFEPRIS.</p>
+        <p class="muted" style="margin:0">Si ya tienes la licencia, captura su número en Ajustes para habilitar estas ventas.</p></div>
+      <div class="m-f"><button class="btn ghost" type="button" data-close>Cerrar</button><button class="btn" type="button" data-act="go-ajustes">Ir a Ajustes</button></div>`);
+    return;
+  }
+  const pideReceta = hayAbx || hayCtrl;
+  const req = hayCtrl ? "required" : "", opc = hayCtrl ? "" : ' <span class="h">(opcional)</span>';
   modal(`
     <div class="m-h"><h2>Cobrar ${money(total)}</h2><button class="x" type="button" data-close aria-label="Cerrar">✕</button></div>
     <form id="cobroForm">
@@ -714,18 +773,21 @@ function abrirCobro() {
           <label class="f">Canal<select name="canal">${CANALES.map(c => `<option>${c}</option>`).join("")}</select></label>
           <label class="f">Nota <span class="h">(opcional)</span><input type="text" name="nota" placeholder="Cliente, referencia…"></label>
         </div>
-        ${hayAbx ? `<div class="box abx" style="display:grid;gap:10px">
-          <b style="color:#5B3FA8">Receta de antibiótico (obligatoria)</b>
+        ${pideReceta ? `<div class="box ${hayCtrl ? "ctrl" : "abx"}" style="display:grid;gap:10px">
+          <b style="color:${hayCtrl ? "var(--red)" : "#5B3FA8"}">${hayCtrl ? `Receta de medicamento controlado (fracción ${fr.join(", ")})` : "Receta de antibiótico (obligatoria)"}</b>
+          ${hayCtrl ? `<label class="f">${fr.includes("I") ? "Folio o código de barras de la receta especial" : "Folio de la receta"}<input type="text" name="folioReceta" required></label>` : ""}
           <div class="grid2">
             <label class="f">Nombre del médico<input type="text" name="medico" required></label>
             <label class="f">Cédula profesional<input type="text" name="cedula" required inputmode="numeric"></label>
             <label class="f">Fecha de la receta<input type="date" name="fechaReceta" required max="${ymd()}"></label>
-            <label class="f">Paciente <span class="h">(opcional)</span><input type="text" name="paciente"></label>
+            <label class="f">Paciente${opc}<input type="text" name="paciente" ${req}></label>
           </div>
-          <label class="f">Domicilio del médico <span class="h">(opcional)</span><input type="text" name="domMedico"></label>
-          <label class="f">Surtido<select name="surtido">
+          <label class="f">Domicilio del médico${opc}<input type="text" name="domMedico" ${req}></label>
+          ${hayCtrl ? `<label class="f">Domicilio del paciente<input type="text" name="domPaciente" required></label>
+            <p class="muted" style="margin:0;font-size:.8rem">${fr.some(x => x !== "III") ? "La receta se retiene." : "Fracción III: la receta se sella y se devuelve; se puede surtir hasta 3 veces en 6 meses."} La salida queda en el libro de control.</p>` :
+          `<label class="f">Surtido<select name="surtido">
             <option value="Total">Total — se retiene la receta</option>
-            <option value="Parcial">Parcial — se sella y se devuelve</option></select></label>
+            <option value="Parcial">Parcial — se sella y se devuelve</option></select></label>`}
         </div>` : ""}
         ${hayRx ? `<label style="display:flex;gap:8px;align-items:flex-start;font-size:.88rem">
           <input type="checkbox" name="rxOk" required style="margin-top:3px"> Revisé la receta médica de los productos marcados Rx.</label>` : ""}
@@ -750,10 +812,16 @@ function abrirCobro() {
     e.preventDefault();
     const recibido = pago === "Efectivo" ? (f.recibido.value === "" ? total : +f.recibido.value) : total;
     if (pago === "Efectivo" && recibido < total) { const er = $("#cobroErr"); er.hidden = false; er.textContent = "El efectivo recibido es menor que el total."; return; }
-    const receta = hayAbx ? {
+    const receta = pideReceta ? {
       medico: f.medico.value.trim(), cedula: f.cedula.value.trim(), fechaReceta: f.fechaReceta.value,
-      paciente: f.paciente.value.trim(), domMedico: f.domMedico.value.trim(), surtido: f.surtido.value
+      paciente: f.paciente.value.trim(), domMedico: f.domMedico.value.trim(), surtido: f.surtido ? f.surtido.value : ""
     } : null;
+    if (hayCtrl) {
+      Object.assign(receta, {folioReceta: f.folioReceta.value.trim(), domPaciente: f.domPaciente.value.trim(), fracciones: fr});
+      const v = validarRecetaCtrl(fr, receta);
+      if (v.errs.length) { const er = $("#cobroErr"); er.hidden = false; er.textContent = v.errs.join(" "); return; }
+      receta.surtido = v.surtido;
+    }
     const venta = registrarVenta({pago, recibido, canal: f.canal.value, nota: f.nota.value.trim(), receta});
     cerrarModal();
     ventaLista(venta);
@@ -761,12 +829,40 @@ function abrirCobro() {
   setTimeout(() => (f.recibido && pago === "Efectivo" ? f.recibido : f.canal).focus(), 30);
 }
 
+// Fracción I y II: la receta se retiene (un solo surtido). Fracción III: hasta 3 surtidos en 6 meses.
+function validarRecetaCtrl(fr, r) {
+  const errs = [];
+  const previas = ventasValidas().filter(s => s.receta && s.receta.folioReceta &&
+    norm(s.receta.folioReceta) === norm(r.folioReceta) && norm(s.receta.cedula) === norm(r.cedula));
+  const retiene = fr.some(x => x !== "III");
+  const yaRetenida = previas.some(s => (s.receta.fracciones || []).some(x => x !== "III"));
+  if (previas.length && (retiene || yaRetenida))
+    errs.push(`Esta receta ya se surtió en la venta ${folioTxt(previas[0].folio)} y quedó retenida; no se puede volver a surtir.`);
+  let surtido = "Retenida";
+  if (!retiene) {
+    const n = previas.length + 1;
+    if (n > 3) errs.push("Esta receta ya se surtió 3 veces, el máximo para fracción III.");
+    const lim = new Date(r.fechaReceta + "T00:00:00"); lim.setMonth(lim.getMonth() + 6);
+    if (new Date(ymd() + "T00:00:00") > lim) errs.push("La receta tiene más de 6 meses; ya no es válida para fracción III.");
+    surtido = `Surtido ${n} de 3 — sellada y devuelta`;
+  }
+  return {errs, surtido};
+}
+// Registra un movimiento en el libro de control; el saldo es la existencia después del movimiento
+function movCtrl(p, tipo, qty, ref = {}, motivo = "") {
+  const r = ref.receta || {};
+  S.ctrlMovs.push({id: uid(), ts: Date.now(), fecha: ymd(), pid: p.id, nombre: p.nombre, pa: p.pa, pres: p.pres, fraccion: p.ctrl,
+    tipo, qty, saldo: p.stock, motivo, factura: ref.factura || "", proveedor: ref.proveedor || "", lote: ref.lote || "",
+    venta: ref.venta || "", folioReceta: r.folioReceta || "", medico: r.medico || "", cedula: r.cedula || "",
+    domMedico: r.domMedico || "", paciente: r.paciente || "", domPaciente: r.domPaciente || "", fechaReceta: r.fechaReceta || ""});
+}
+
 function registrarVenta({pago, recibido, canal, nota, receta}) {
   const caja = cajaAbierta();
   const items = cart.map(l => {
     const p = prod(l.pid);
     return {pid: p.id, nombre: p.nombre, pa: p.pa, pres: p.pres, qty: l.qty, precio: round2(l.precio),
-      costo: p.costo || 0, abx: !!p.abx, rx: !!p.rx, lote: p.lote || ""};
+      costo: p.costo || 0, abx: !!p.abx, rx: !!p.rx, ctrl: p.ctrl || "", lote: p.lote || ""};
   });
   const total = round2(items.reduce((a, i) => a + i.qty * i.precio, 0));
   S.meta.folio = (S.meta.folio || 0) + 1;
@@ -774,8 +870,9 @@ function registrarVenta({pago, recibido, canal, nota, receta}) {
     recibido: round2(recibido), cambio: round2(Math.max(0, recibido - total)), canal, nota, receta, cajaId: caja ? caja.id : null};
   items.forEach(i => { const p = prod(i.pid); p.stock -= i.qty; });
   S.sales.push(venta);
+  items.filter(i => i.ctrl).forEach(i => movCtrl(prod(i.pid), "Salida", -i.qty, {venta: venta.folio, receta}));
   cart = [];
-  save("sales", "products", "meta");
+  save("sales", "products", "meta", "ctrlMovs");
   return venta;
 }
 function ventaLista(v) {
@@ -810,6 +907,7 @@ function renderInventario() {
       case "sincosto": return !p.costo;
       case "abx": return p.abx;
       case "rx": return p.rx;
+      case "ctrl": return !!p.ctrl;
     }
     return true;
   });
@@ -826,7 +924,7 @@ function renderInventario() {
     const sm = semaforo(p), m = p.precio ? (p.precio - (p.costo || 0)) / p.precio : 0;
     const st = p.stock <= 0 ? "b-bad" : p.stock <= min ? "b-warn" : "";
     return `<tr class="click" data-edit="${p.id}">
-      <td><b style="color:var(--navy)">${esc(p.nombre)}</b> ${p.abx ? '<span class="badge b-abx">Abx</span>' : p.rx ? '<span class="badge b-rx">Rx</span>' : ""}
+      <td><b style="color:var(--navy)">${esc(p.nombre)}</b> ${badges(p, true)}
         <span class="sub">${esc(p.pa)} · ${esc(p.pres)}</span></td>
       <td>${esc(p.cat)}</td>
       <td class="r num">${st ? `<span class="badge ${st}">${p.stock}</span>` : p.stock}</td>
@@ -865,6 +963,8 @@ function abrirProducto(id) {
         <label class="f">Lote<input type="text" name="lote" value="${esc(p.lote)}"></label>
         <label class="f">Caducidad <span class="h">(la más próxima)</span><input type="date" name="cad" value="${p.cad || ""}"></label>
       </div>
+      <label class="f">Medicamento controlado<select name="ctrl"><option value="">No es controlado</option>
+        ${Object.entries(FRACCIONES).map(([k, v]) => `<option value="${k}" ${p.ctrl === k ? "selected" : ""}>${v}</option>`).join("")}</select></label>
       <div class="seg">
         <label style="display:flex;gap:6px;align-items:center;font-size:.88rem"><input type="checkbox" name="rx" ${p.rx ? "checked" : ""}> Requiere receta (Rx)</label>
         <label style="display:flex;gap:6px;align-items:center;font-size:.88rem;margin-left:12px"><input type="checkbox" name="abx" ${p.abx ? "checked" : ""}> Es antibiótico (pide datos de receta)</label>
@@ -877,18 +977,25 @@ function abrirProducto(id) {
     e.preventDefault();
     const f = e.target, nuevo = !id;
     const obj = nuevo ? {id: uid()} : p;
-    const stockAntes = nuevo ? 0 : p.stock;
+    const stockAntes = nuevo ? 0 : p.stock, ctrlAntes = nuevo ? "" : (p.ctrl || ""), ctrl = f.ctrl.value;
+    let motivo = "";
+    if (ctrl && ctrlAntes && Math.floor(+f.stock.value || 0) !== stockAntes) {
+      motivo = (prompt("Motivo del ajuste de este medicamento controlado (merma, caducidad, robo, conteo físico…):") || "").trim();
+      if (!motivo) { toast("El ajuste de un controlado necesita motivo"); return; }
+    }
     Object.assign(obj, {
       nombre: f.nombre.value.trim(), pa: f.pa.value.trim(), pres: f.pres.value.trim(), cat: f.cat.value.trim(),
       barcode: f.barcode.value.trim(), costo: round2(f.costo.value), precio: round2(f.precio.value),
       stock: Math.floor(+f.stock.value || 0), lote: f.lote.value.trim(), cad: f.cad.value, cadTxt: f.cad.value ? fechaCorta(f.cad.value) : "",
-      rx: f.rx.checked || f.abx.checked, abx: f.abx.checked
+      rx: f.rx.checked || f.abx.checked || !!ctrl, abx: f.abx.checked, ctrl
     });
     delete obj._k;
     if (nuevo) S.products.push(obj);
     if (obj.stock !== stockAntes) S.entradas.push({id: uid(), ts: Date.now(), fecha: ymd(), pid: obj.id, nombre: obj.nombre,
       tipo: nuevo ? "Alta" : "Ajuste", qty: obj.stock - stockAntes, costo: obj.costo, lote: obj.lote, cad: obj.cad, proveedor: ""});
-    save("products", "entradas"); cerrarModal(); toast("Producto guardado"); render();
+    if (ctrl && !ctrlAntes) movCtrl(obj, "Saldo inicial", obj.stock, {}, "Alta en el libro de control");
+    else if (ctrl && obj.stock !== stockAntes) movCtrl(obj, "Ajuste", obj.stock - stockAntes, {}, motivo);
+    save("products", "entradas", "ctrlMovs"); cerrarModal(); toast("Producto guardado"); render();
   });
 }
 function abrirEntrada(pid) {
@@ -903,20 +1010,25 @@ function abrirEntrada(pid) {
         <label class="f">Lote<input type="text" name="lote"></label>
         <label class="f">Caducidad<input type="date" name="cad"></label>
       </div>
-      <label class="f">Proveedor <span class="h">(opcional)</span><input type="text" name="proveedor" placeholder="Fanasa, Nadro…"></label>
+      <div class="grid2">
+        <label class="f">Proveedor <span class="h">(obligatorio en controlados)</span><input type="text" name="proveedor" placeholder="Fanasa, Nadro…"></label>
+        <label class="f">Número de factura <span class="h">(obligatorio en controlados)</span><input type="text" name="factura"></label>
+      </div>
       <p class="muted" style="margin:0;font-size:.8rem">El costo del producto se recalcula como promedio ponderado con la existencia actual.</p>
     </div><div class="m-f"><button class="btn ghost" type="button" data-close>Cancelar</button><button class="btn" type="submit">Registrar entrada</button></div></form>`);
   $("#entForm").addEventListener("submit", e => {
     e.preventDefault();
     const f = e.target, p = prod(f.pid.value); if (!p) return;
+    if (p.ctrl && (!f.proveedor.value.trim() || !f.factura.value.trim())) { toast("En un controlado, captura proveedor y número de factura"); return; }
     const qty = Math.floor(+f.qty.value), c = round2(f.costo.value), base = Math.max(0, p.stock);
     p.costo = round2(base > 0 && p.costo ? (base * p.costo + qty * c) / (base + qty) : c);
     p.stock += qty;
     if (f.lote.value.trim() && !String(p.lote || "").includes(f.lote.value.trim())) p.lote = p.lote ? p.lote + " / " + f.lote.value.trim() : f.lote.value.trim();
     if (f.cad.value && (!p.cad || base <= 0 || f.cad.value < p.cad)) { p.cad = f.cad.value; p.cadTxt = fechaCorta(f.cad.value); }
     S.entradas.push({id: uid(), ts: Date.now(), fecha: ymd(), pid: p.id, nombre: p.nombre, tipo: "Compra", qty, costo: c,
-      lote: f.lote.value.trim(), cad: f.cad.value, proveedor: f.proveedor.value.trim()});
-    save("products", "entradas"); cerrarModal(); toast(`Entrada registrada: ${qty} × ${p.nombre}`); render();
+      lote: f.lote.value.trim(), cad: f.cad.value, proveedor: f.proveedor.value.trim(), factura: f.factura.value.trim()});
+    if (p.ctrl) movCtrl(p, "Entrada", qty, {factura: f.factura.value.trim(), proveedor: f.proveedor.value.trim(), lote: f.lote.value.trim()});
+    save("products", "entradas", "ctrlMovs"); cerrarModal(); toast(`Entrada registrada: ${qty} × ${p.nombre}`); render();
   });
 }
 
@@ -956,7 +1068,7 @@ function detalleVenta(id) {
       </tbody></table>
       <div class="total-row"><span class="muted">Total</span><b>${money(s.total)}</b></div>
       <p class="muted" style="margin:0;font-size:.85rem">Costo ${money(costoVenta(s))} · Utilidad ${money(s.total - costoVenta(s))}</p>
-      ${r ? `<div class="box abx" style="font-size:.88rem"><b>Receta</b><br>Médico: ${esc(r.medico)} · Cédula ${esc(r.cedula)}<br>Fecha de receta: ${fechaCorta(r.fechaReceta)}${r.paciente ? " · Paciente: " + esc(r.paciente) : ""}<br>Surtido: ${esc(r.surtido)}</div>` : ""}
+      ${r ? `<div class="box abx" style="font-size:.88rem"><b>Receta</b><br>Médico: ${esc(r.medico)} · Cédula ${esc(r.cedula)}<br>Fecha de receta: ${fechaCorta(r.fechaReceta)}${r.folioReceta ? " · Folio " + esc(r.folioReceta) : ""}${r.paciente ? "<br>Paciente: " + esc(r.paciente) + (r.domPaciente ? ", " + esc(r.domPaciente) : "") : ""}<br>Surtido: ${esc(r.surtido)}</div>` : ""}
     </div>
     <div class="m-f">${s.cancel ? "" : `<button class="btn danger" type="button" data-cancel-sale="${s.id}" style="margin-right:auto">Cancelar venta</button>`}
       <button class="btn ghost" type="button" data-print-sale="${s.id}">Imprimir ticket</button>
@@ -968,7 +1080,8 @@ function cancelarVenta(id) {
   if (motivo === null) return;
   s.cancel = {ts: Date.now(), motivo: motivo.trim() || "Sin motivo"};
   s.items.forEach(i => { const p = prod(i.pid); if (p) p.stock += i.qty; });
-  save("sales", "products"); cerrarModal(); toast("Venta cancelada"); render();
+  s.items.filter(i => i.ctrl).forEach(i => { const p = prod(i.pid); if (p) movCtrl(p, "Devolución", i.qty, {venta: s.folio, receta: s.receta}, "Venta cancelada: " + s.cancel.motivo); });
+  save("sales", "products", "ctrlMovs"); cerrarModal(); toast("Venta cancelada"); render();
 }
 
 /* =====================================================================
@@ -1222,17 +1335,98 @@ function renderAbx() {
 $("#aMes").addEventListener("change", renderAbx);
 
 /* =====================================================================
+   CONTROLADOS
+   ===================================================================== */
+function filasLibro(pid, m) {
+  return S.ctrlMovs.filter(x => (!pid || x.pid === pid) && (!m || x.fecha.startsWith(m))).sort((a, b) => a.ts - b.ts);
+}
+function refLibro(x) {
+  if (x.tipo === "Entrada") return `Factura ${x.factura} · ${x.proveedor}${x.lote ? " · Lote " + x.lote : ""}`;
+  if (x.tipo === "Salida") return `Venta ${folioTxt(x.venta)} · Receta ${x.folioReceta} (${fechaCorta(x.fechaReceta)}) · ${x.medico}, céd. ${x.cedula} · Paciente: ${x.paciente}`;
+  return x.motivo + (x.venta ? ` (venta ${folioTxt(x.venta)})` : "");
+}
+const filaLibroExcel = x => ({Fecha: x.fecha, Producto: x.nombre, "Principio activo": x.pa, Fracción: x.fraccion, Movimiento: x.tipo,
+  Entrada: x.qty > 0 ? x.qty : "", Salida: x.qty < 0 ? -x.qty : "", Saldo: x.saldo, Factura: x.factura, Proveedor: x.proveedor, Lote: x.lote,
+  "Folio de venta": x.venta, "Folio de receta": x.folioReceta, "Fecha de receta": x.fechaReceta, Médico: x.medico, Cédula: x.cedula,
+  "Domicilio del médico": x.domMedico, Paciente: x.paciente, "Domicilio del paciente": x.domPaciente, Motivo: x.motivo});
+function renderControlados() {
+  const ctrls = S.products.filter(p => p.ctrl).sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+  const ps = $("#cProd"), pv = ps.value;
+  ps.innerHTML = `<option value="">Todos los controlados</option>` + ctrls.map(p => `<option value="${p.id}">${esc(p.nombre)}</option>`).join("");
+  if ([...ps.options].some(o => o.value === pv)) ps.value = pv;
+  const ms = $("#cMes"), mv = ms.value;
+  ms.innerHTML = `<option value="">Todo el historial</option>` + mesesDisponibles().map(m => `<option value="${m}">${mesNombre(m)}</option>`).join("");
+  ms.value = mv || "";
+  $("#cBanner").innerHTML = (S.settings.licencia ? "" : `<div class="banner warn"><span>Las ventas de controlados están <b>bloqueadas</b>: para surtir fracciones I, II y III se necesita licencia sanitaria (no basta el aviso de funcionamiento) y libro de control autorizado por COFEPRIS. Si ya tienes la licencia, captúrala en Ajustes.</span><span class="sp"></span><button class="btn sm" type="button" data-act="go-ajustes">Ir a Ajustes</button></div>`) +
+    `<div class="banner info"><span>La fracción de cada producto la confirma tu responsable sanitario. Verifica también que este registro electrónico cumpla con lo que COFEPRIS te autorice como libro de control.</span></div>`;
+  const mes = ym(), movMes = S.ctrlMovs.filter(x => x.fecha.startsWith(mes));
+  $("#cKpis").innerHTML = kpi("Productos controlados", ctrls.length, ctrls.reduce((a, p) => a + Math.max(0, p.stock), 0) + " piezas") +
+    kpi("Salidas este mes", movMes.filter(x => x.tipo === "Salida").reduce((a, x) => a - x.qty, 0) + " pzas",
+      new Set(movMes.filter(x => x.tipo === "Salida").map(x => x.folioReceta)).size + " recetas") +
+    kpi("Entradas este mes", movMes.filter(x => x.tipo === "Entrada").reduce((a, x) => a + x.qty, 0) + " pzas");
+  $("#cProds").innerHTML = ctrls.map(p => {
+    const ult = S.ctrlMovs.filter(x => x.pid === p.id).sort((a, b) => b.ts - a.ts)[0];
+    const saldo = ult ? ult.saldo : null, ok = saldo === p.stock;
+    return `<tr><td><b style="color:var(--navy)">${esc(p.nombre)}</b><span class="sub">${esc(p.pa)} · ${esc(p.pres)}</span></td>
+      <td><span class="badge b-ctrl">Fracción ${p.ctrl}</span></td><td class="r num">${p.stock}</td>
+      <td class="r num">${saldo === null ? "—" : ok ? saldo : `<span class="badge b-bad" title="El saldo del libro no coincide con la existencia">${saldo}</span>`}</td>
+      <td class="r"><button class="btn ghost sm" type="button" data-ver-libro="${p.id}">Ver libro</button></td></tr>`;
+  }).join("") || `<tr><td colspan="5" class="muted" style="padding:20px">No hay productos marcados como controlados. Márcalos desde Inventario → Editar → «Medicamento controlado».</td></tr>`;
+  const rows = filasLibro(ps.value, ms.value);
+  $("#cBody").innerHTML = rows.map(x => `<tr><td class="num">${fechaCorta(x.fecha)}</td><td>${esc(x.nombre)}<span class="sub">F-${esc(x.fraccion)}</span></td>
+      <td>${esc(x.tipo)}</td><td style="max-width:420px">${esc(refLibro(x))}</td>
+      <td class="r num">${x.qty > 0 ? x.qty : ""}</td><td class="r num">${x.qty < 0 ? -x.qty : ""}</td><td class="r num"><b>${x.saldo}</b></td></tr>`).join("") ||
+    `<tr><td colspan="7" class="muted" style="padding:20px">Sin movimientos.</td></tr>`;
+  const sug = S.products.filter(p => !p.ctrl && POSIBLES_CONTROLADOS.some(k => norm(p.pa).includes(k)));
+  $("#cSug").innerHTML = sug.length ? `<div class="card pad"><h3 style="margin-bottom:6px">Posibles controlados sin marcar</h3>
+    <p class="muted" style="margin:0 0 10px;font-size:.85rem">Su principio activo suele ser controlado. Confirma la fracción con tu responsable sanitario antes de marcarlo.</p>
+    <table><tbody>${sug.map(p => `<tr><td>${esc(p.nombre)}<span class="sub">${esc(p.pa)}</span></td>
+      <td><select data-frac-for="${p.id}" aria-label="Fracción"><option value="">Elige fracción…</option>${Object.keys(FRACCIONES).map(k => `<option value="${k}">Fracción ${k}</option>`).join("")}</select></td>
+      <td class="r"><button class="btn sm" type="button" data-mark-ctrl="${p.id}">Marcar</button></td></tr>`).join("")}</tbody></table></div>` : "";
+}
+["#cProd", "#cMes"].forEach(s => $(s).addEventListener("change", renderControlados));
+$("#p-controlados").addEventListener("click", e => {
+  const v = e.target.closest("[data-ver-libro]");
+  if (v) { $("#cProd").value = v.dataset.verLibro; renderControlados(); $("#cBody").scrollIntoView({behavior: "smooth", block: "nearest"}); return; }
+  const mk = e.target.closest("[data-mark-ctrl]");
+  if (mk) {
+    const p = prod(mk.dataset.markCtrl), fr = $(`[data-frac-for="${p.id}"]`).value;
+    if (!fr) { toast("Elige la fracción que te confirme tu responsable sanitario"); return; }
+    if (!confirm(`¿Marcar ${p.nombre} como controlado, fracción ${fr}? Se abre su libro con saldo inicial de ${p.stock} piezas.`)) return;
+    p.ctrl = fr; p.rx = true; movCtrl(p, "Saldo inicial", p.stock, {}, "Alta en el libro de control");
+    save("products", "ctrlMovs"); toast("Producto marcado como controlado"); renderControlados();
+  }
+});
+function imprimirLibro() {
+  const pid = $("#cProd").value, m = $("#cMes").value, rows = filasLibro(pid, m), s = S.settings;
+  const titulo = (pid ? prod(pid).nombre : "Todos los controlados") + " · " + (m ? mesNombre(m) : "todo el historial");
+  $("#print").className = "hoja"; imprimir.hoja = true;
+  imprimir(`<h3>Libro de control de medicamentos controlados</h3><p>${esc(s.nombre)} · ${esc(s.direccion)}<br>Licencia sanitaria: ${esc(s.licencia || "—")} ·
+    Responsable sanitario: ${esc(s.responsable)}<br>${esc(titulo)}</p>
+    <table><thead><tr><th>Fecha</th><th>Producto</th><th>Movimiento</th><th>Referencia</th><th>Entrada</th><th>Salida</th><th>Saldo</th></tr></thead><tbody>
+    ${rows.map(x => `<tr><td>${fechaCorta(x.fecha)}</td><td>${esc(x.nombre)} (F-${esc(x.fraccion)})</td><td>${esc(x.tipo)}</td><td>${esc(refLibro(x))}${x.domPaciente ? ", " + esc(x.domPaciente) : ""}</td>
+      <td>${x.qty > 0 ? x.qty : ""}</td><td>${x.qty < 0 ? -x.qty : ""}</td><td>${x.saldo}</td></tr>`).join("")}</tbody></table>
+    <p style="margin-top:28px">Firma del responsable sanitario: ______________________________</p>`);
+}
+function exportarLibro() {
+  if (!necesitaXLSX()) return;
+  const rows = filasLibro($("#cProd").value, $("#cMes").value).map(filaLibroExcel), wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, rows.length ? XLSX.utils.json_to_sheet(rows) : XLSX.utils.aoa_to_sheet([["Sin movimientos"]]), "Libro de control");
+  XLSX.writeFile(wb, `GenPat_Libro_controlados_${$("#cMes").value || "historial"}_${ymd()}.xlsx`);
+}
+
+/* =====================================================================
    AJUSTES, RESPALDO, EXCEL
    ===================================================================== */
 function renderAjustes() {
   const f = $("#negocioForm");
-  ["nombre", "direccion", "telefono", "cofepris", "responsable", "pie", "minimo"].forEach(k => f[k].value = S.settings[k] ?? "");
+  ["nombre", "direccion", "telefono", "cofepris", "responsable", "licencia", "pie", "minimo"].forEach(k => f[k].value = S.settings[k] ?? "");
   $("#backupInfo").textContent = S.settings.lastBackup ? "Último respaldo: " + fechaLarga(S.settings.lastBackup) : "Aún no has descargado ningún respaldo.";
   $("#pinInfo").textContent = S.settings.pinHash ? "El PIN está activo: se pide al abrir el sistema." : "Sin PIN: cualquiera con este dispositivo puede entrar.";
 }
 $("#negocioForm").addEventListener("submit", e => {
   e.preventDefault(); const f = e.target;
-  ["nombre", "direccion", "telefono", "cofepris", "responsable", "pie"].forEach(k => S.settings[k] = f[k].value.trim());
+  ["nombre", "direccion", "telefono", "cofepris", "responsable", "licencia", "pie"].forEach(k => S.settings[k] = f[k].value.trim());
   S.settings.minimo = Math.max(0, Math.floor(+f.minimo.value || 0));
   save("settings"); toast("Ajustes guardados");
 });
@@ -1354,9 +1548,9 @@ async function importarExcel(file) {
     const msg = `Encontré ${products.length} productos, ${sales.length} ventas y ${gastos.length} gastos.` +
       (hayDatos ? "\n\nEsto REEMPLAZA los productos, ventas y gastos que ya tienes en este dispositivo. ¿Continuar?" : "\n\n¿Importar?");
     if (!confirm(msg)) return;
-    S.products = products; S.sales = sales; S.gastos = gastos; S.entradas = []; S.meta.folio = folio; cart = [];
+    S.products = products; S.sales = sales; S.gastos = gastos; S.entradas = []; S.ctrlMovs = []; S.meta.folio = folio; cart = [];
     if (hayDatos) S.cajas = [];
-    save("products", "sales", "gastos", "entradas", "meta", "cajas");
+    save("products", "sales", "gastos", "entradas", "ctrlMovs", "meta", "cajas");
     toast(`Importado: ${products.length} productos${sinProducto ? ` · ${sinProducto} ventas sin producto ligado` : ""}`, 4000);
     irA("vender");
   } catch (err) { alert("No se pudo importar el Excel: " + err.message); }
@@ -1372,7 +1566,7 @@ function hojasExport(m) {
     Estado: s.cancel ? "Cancelada: " + s.cancel.motivo : "Válida"})));
   const productos = S.products.map(p => ({Categoría: p.cat, Producto: p.nombre, "Principio activo": p.pa, Presentación: p.pres,
     Existencia: p.stock, "Costo unitario": p.costo, Precio: p.precio, Lote: p.lote, Caducidad: p.cad ? fechaCorta(p.cad) : p.cadTxt,
-    Rx: p.rx ? "Sí" : "", Antibiótico: p.abx ? "Sí" : "", "Código de barras": p.barcode || ""}));
+    Rx: p.rx ? "Sí" : "", Antibiótico: p.abx ? "Sí" : "", Controlado: p.ctrl ? "Fracción " + p.ctrl : "", "Código de barras": p.barcode || ""}));
   const gastos = S.gastos.filter(g => enMes(g.fecha)).map(g => ({Fecha: g.fecha, Mes: g.fecha.slice(0, 7), Grupo: g.grupo, Categoría: g.cat,
     Concepto: g.concepto, Proveedor: g.proveedor, "Forma de pago": g.pago, "Monto sin IVA": g.monto, IVA: g.iva, Total: g.total, Factura: g.factura, Notas: g.notas}));
   const abx = filasAbx(m).map(({s, i, r}) => ({"Fecha de venta": s.fecha, Folio: s.folio, Medicamento: i.nombre, "Principio activo": i.pa,
@@ -1382,7 +1576,8 @@ function hojasExport(m) {
     "Costo unitario": x.costo, Lote: x.lote, Caducidad: x.cad, Proveedor: x.proveedor}));
   const cortes = S.cajas.filter(c => c.cierre && enMes(ymd(new Date(c.abre)))).map(c => ({Apertura: fechaLarga(c.abre), Cierre: fechaLarga(c.cierre.ts),
     Fondo: c.fondo, "Ventas efectivo": c.cierre.ventasEfectivo, Esperado: c.cierre.esperado, Contado: c.cierre.contado, Diferencia: c.cierre.dif}));
-  return {Ventas: ventas, Productos: productos, Gastos: gastos, "Entradas y ajustes": entradas, Cortes: cortes, Antibióticos: abx};
+  const ctrl = filasLibro("", m).map(filaLibroExcel);
+  return {Ventas: ventas, Productos: productos, Gastos: gastos, "Entradas y ajustes": entradas, Cortes: cortes, Antibióticos: abx, "Libro de control": ctrl};
 }
 function exportarExcel(m, soloAbx) {
   if (!necesitaXLSX()) return;
@@ -1404,6 +1599,8 @@ function exportarExcel(m, soloAbx) {
    IMPRESIÓN
    ===================================================================== */
 function imprimir(html) {
+  if (!imprimir.hoja) $("#print").className = "";
+  imprimir.hoja = false;
   $("#print").innerHTML = html;
   setTimeout(() => window.print(), 50);
 }
@@ -1474,6 +1671,9 @@ document.addEventListener("click", e => {
     case "export-excel": return exportarExcel($("#rMes").value);
     case "export-excel-all": return exportarExcel("");
     case "export-abx": return exportarExcel($("#aMes").value, true);
+    case "export-ctrl": return exportarLibro();
+    case "print-ctrl": return imprimirLibro();
+    case "go-ajustes": cerrarModal(); return irA("ajustes");
     case "remove-pin": S.settings.pinHash = ""; save("settings"); toast("PIN eliminado"); return renderAjustes();
     case "toggle-chart-table": {
       const on = t.getAttribute("aria-pressed") !== "true"; t.setAttribute("aria-pressed", on);
