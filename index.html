@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GenPat Pharma | Medicamentos de patente y genéricos</title>
+<meta name="description" content="Medicamentos de patente y genéricos surtidos completos y a tiempo. Cotiza en minutos por WhatsApp.">
+<meta name="theme-color" content="#0b2a3c">
+<meta property="og:title" content="GenPat Pharma | Medicamentos de patente y genéricos">
+<meta property="og:description" content="Tu pedido completo, al mejor precio y sin vueltas. Cotiza en minutos por WhatsApp.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b2a3c'/%3E%3Cpath d='M11 9h4v5h5v4h-5v5h-4v-5H6v-4h5z' fill='%2334d399'/%3E%3C/svg%3E">
+<style>
+/* Critical CSS inline: no external requests, no render blocking */
+:root{
+  --ink:#0b2a3c;--ink-2:#123a52;--text:#1d2b36;--muted:#5b6b78;
+  --bg:#ffffff;--soft:#f3f7f9;--line:#e3eaef;
+  --accent:#10b981;--accent-ink:#065f46;--accent-soft:#d1fae5;
+  --wa:#25d366;--radius:16px;--gutter:16px;--tap:52px;
+  --shadow:0 10px 30px -12px rgba(11,42,60,.25);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;font:400 1rem/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+img,svg{display:block;max-width:100%}
+a{color:inherit}
+h1,h2,h3{color:var(--ink);line-height:1.12;letter-spacing:-.02em;margin:0}
+p{margin:0}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:0 var(--gutter)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-999px;top:8px;background:#fff;padding:12px 16px;border-radius:8px;z-index:100}
+.skip:focus{left:8px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+
+/* Buttons: min 52px tall, full-width on phones */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:var(--tap);padding:0 24px;border-radius:999px;font-weight:700;font-size:1.0625rem;text-decoration:none;border:2px solid transparent;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,background .15s ease;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.btn:active{transform:scale(.97)}
+.btn svg{width:22px;height:22px;flex:none}
+.btn-primary{background:var(--accent);color:#04281d;box-shadow:0 8px 24px -8px rgba(16,185,129,.7)}
+.btn-primary:hover{background:#34d399}
+.btn-ghost{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.28)}
+.btn-ghost:hover{background:rgba(255,255,255,.16)}
+.btn-dark{background:var(--ink);color:#fff}
+
+/* Header */
+.hdr{position:sticky;top:0;z-index:50;background:rgba(11,42,60,.92);-webkit-backdrop-filter:saturate(1.4) blur(12px);backdrop-filter:saturate(1.4) blur(12px);color:#fff}
+.hdr .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:10px;min-height:48px;font-weight:800;font-size:1.125rem;text-decoration:none;letter-spacing:-.01em}
+.logo-mark{width:34px;height:34px}
+.logo span b{color:#34d399;font-weight:800}
+.nav{display:none}
+.nav a{color:#cfe0ea;text-decoration:none;font-weight:600;padding:10px 14px;border-radius:999px}
+.nav a:hover{color:#fff;background:rgba(255,255,255,.08)}
+.menu-btn{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;margin-right:-8px;background:none;border:0;color:#fff;border-radius:12px;cursor:pointer}
+.menu-btn svg{width:26px;height:26px}
+.drawer{display:none;border-top:1px solid rgba(255,255,255,.1);padding:8px var(--gutter) 20px}
+.drawer.open{display:block}
+.drawer a{display:flex;align-items:center;min-height:52px;color:#e6f0f5;text-decoration:none;font-weight:600;font-size:1.0625rem;border-bottom:1px solid rgba(255,255,255,.08)}
+.drawer .btn{width:100%;margin-top:16px;border:0}
+.hdr-cta{display:none}
+
+/* Hero */
+.hero{position:relative;overflow:hidden;color:#cfe0ea;padding:28px 0 48px;background:radial-gradient(120% 80% at 100% 0%,#155e75 0%,transparent 55%),radial-gradient(90% 70% at 0% 100%,#064e3b 0%,transparent 60%),var(--ink)}
+.hero::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1px);background-size:22px 22px;mask-image:linear-gradient(180deg,#000 30%,transparent);-webkit-mask-image:linear-gradient(180deg,#000 30%,transparent);pointer-events:none}
+.hero .wrap{position:relative;z-index:1}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.3);color:#a7f3d0;font-size:.875rem;font-weight:600}
+.dot{width:8px;height:8px;border-radius:50%;background:#34d399;box-shadow:0 0 0 4px rgba(52,211,153,.25)}
+.hero h1{color:#fff;font-size:clamp(2.125rem,8.6vw,4.25rem);font-weight:800;margin:18px 0 14px;max-width:15ch}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#34d399,#5eead4);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{font-size:clamp(1.0625rem,4.2vw,1.3rem);line-height:1.55;max-width:34ch;color:#cfe0ea}
+.hero .sub strong{color:#fff;font-weight:600}
+.cta-row{display:grid;gap:12px;margin-top:24px}
+.cta-row .btn{width:100%}
+.micro{margin-top:14px;font-size:.875rem;color:#9fb8c6;display:flex;align-items:center;gap:8px}
+.micro svg{width:16px;height:16px;color:#34d399}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px;padding:0;list-style:none}
+.chips li{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#e6f0f5;font-size:.9375rem;font-weight:600}
+.chips svg{width:18px;height:18px;color:#34d399}
+.hero-card{display:none}
+
+/* Sections */
+section{padding:64px 0}
+.kicker{display:block;color:var(--accent-ink);font-weight:700;font-size:.8125rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
+.sec-title{font-size:clamp(1.75rem,6.5vw,2.75rem);font-weight:800;max-width:20ch}
+.sec-lead{color:var(--muted);font-size:1.0625rem;margin-top:12px;max-width:52ch}
+.grid{display:grid;gap:14px;margin-top:32px}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:0 1px 0 rgba(11,42,60,.03)}
+.card h3{font-size:1.1875rem;margin:14px 0 6px}
+.card p{color:var(--muted)}
+.ico{display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:var(--accent-soft);color:var(--accent-ink)}
+.ico svg{width:24px;height:24px}
+
+.soft{background:var(--soft)}
+.steps{counter-reset:s;list-style:none;padding:0;margin:32px 0 0;display:grid;gap:14px}
+.steps li{position:relative;background:#fff;border-radius:var(--radius);padding:22px 22px 22px 76px;border:1px solid var(--line)}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:22px;top:22px;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:var(--ink);color:#fff;font-weight:800}
+.steps h3{font-size:1.125rem;margin-bottom:4px}
+.steps p{color:var(--muted)}
+
+.who{display:grid;gap:12px;margin-top:32px}
+.who a{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:76px;padding:18px 20px;border-radius:var(--radius);background:var(--ink);color:#fff;text-decoration:none;transition:background .15s}
+.who a:hover{background:var(--ink-2)}
+.who b{display:block;font-size:1.125rem}
+.who small{color:#9fb8c6;font-size:.9375rem}
+.who svg{width:22px;height:22px;flex:none;color:#34d399}
+
+.faq{margin-top:28px;border-top:1px solid var(--line)}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:64px;padding:12px 0;font-weight:700;color:var(--ink);font-size:1.0625rem;cursor:pointer;list-style:none}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--soft);font-size:1.25rem;font-weight:600;transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{color:var(--muted);padding:0 0 18px}
+
+.final{background:linear-gradient(135deg,#064e3b,#0b2a3c 60%);color:#cfe0ea;border-radius:24px;padding:36px 22px;text-align:center}
+.final h2{color:#fff;font-size:clamp(1.75rem,6.5vw,2.5rem);font-weight:800}
+.final p{margin:12px auto 24px;max-width:40ch}
+.final .btn{width:100%;max-width:380px}
+
+footer{background:var(--ink);color:#9fb8c6;padding:40px 0 24px;font-size:.9375rem}
+footer .cols{display:grid;gap:24px}
+footer h4{color:#fff;margin:0 0 10px;font-size:1rem}
+footer ul{list-style:none;padding:0;margin:0}
+footer li a{display:inline-flex;align-items:center;min-height:44px;text-decoration:none;color:#cfe0ea}
+footer li a:hover{color:#fff}
+footer .legal{border-top:1px solid rgba(255,255,255,.1);margin-top:24px;padding-top:20px;display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between;font-size:.8125rem;align-items:center}
+footer .legal a{display:inline-flex;align-items:center;min-height:44px}
+
+/* Sticky thumb-zone CTA bar (phones only) */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:60;display:grid;grid-template-columns:1fr 2fr;gap:10px;padding:12px var(--gutter) calc(12px + env(safe-area-inset-bottom));background:rgba(255,255,255,.94);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-top:1px solid var(--line);box-shadow:0 -8px 24px -12px rgba(11,42,60,.2);transform:translateY(110%);transition:transform .25s ease;visibility:hidden}
+.dock.show{transform:translateY(0);visibility:visible}
+.dock .btn{width:100%;padding:0 12px;font-size:1rem}
+.btn-call{background:var(--soft);color:var(--ink);border-color:var(--line)}
+.btn-wa{background:var(--wa);color:#05361b}
+
+/* Lazy-render below-the-fold sections */
+.lazy{content-visibility:auto;contain-intrinsic-size:auto 700px}
+
+/* Tablet+ */
+@media (min-width:640px){
+  :root{--gutter:24px}
+  .cta-row{display:flex;flex-wrap:wrap}
+  .cta-row .btn{width:auto}
+  .grid{grid-template-columns:1fr 1fr}
+  .who{grid-template-columns:1fr 1fr 1fr}
+  footer .cols{grid-template-columns:2fr 1fr 1fr}
+  .final{padding:56px 40px}
+}
+/* Desktop */
+@media (min-width:960px){
+  body{padding-bottom:0}
+  .dock{display:none}
+  .nav{display:flex;gap:4px}
+  .menu-btn,.drawer{display:none!important}
+  .hdr-cta{display:inline-flex;min-height:44px;padding:0 20px;font-size:.9375rem}
+  .hdr .wrap{height:72px}
+  .hero{padding:88px 0 104px}
+  .hero .wrap{display:grid;grid-template-columns:1.2fr .8fr;gap:56px;align-items:center}
+  .hero-card{display:block;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:28px;box-shadow:var(--shadow);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+  .hero-card h2{color:#fff;font-size:1.125rem;margin-bottom:16px}
+  .hero-card ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+  .hero-card li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-radius:14px;background:rgba(255,255,255,.05);color:#e6f0f5;font-weight:600}
+  .hero-card li span{font-size:.8125rem;font-weight:700;color:#04281d;background:#34d399;padding:4px 10px;border-radius:999px}
+  .hero-card .btn{width:100%;margin-top:18px}
+  section{padding:96px 0}
+  .grid{grid-template-columns:repeat(4,1fr)}
+  .steps{grid-template-columns:repeat(3,1fr)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Saltar al contenido</a>
+
+<!--
+  CONFIGURA AQUÍ (buscar y reemplazar en todo el archivo):
+  52XXXXXXXXXX      -> número de WhatsApp con lada país, sin + ni espacios (ej. 5215512345678)
+  +52XXXXXXXXXX     -> teléfono para llamadas
+  contacto@genpat.mx -> correo real
+-->
+
+<header class="hdr">
+  <div class="wrap">
+    <a class="logo" href="#" aria-label="GenPat Pharma, inicio">
+      <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#123a52"/><path d="M11 8h4v6h6v4h-6v6h-4v-6H5v-4h6z" fill="#34d399"/></svg>
+      <span>GenPat <b>Pharma</b></span>
+    </a>
+    <nav class="nav" aria-label="Principal">
+      <a href="#productos">Productos</a>
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#clientes">Clientes</a>
+      <a href="#faq">Preguntas</a>
+    </nav>
+    <a class="btn btn-primary hdr-cta" href="https://wa.me/52XXXXXXXXXX?text=Hola%20GenPat%2C%20quiero%20cotizar%20medicamentos" target="_blank" rel="noopener">Cotizar ahora</a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Abrir menú">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <nav id="drawer" class="drawer" aria-label="Menú móvil">
+    <a href="#productos">Productos</a>
+    <a href="#como-funciona">Cómo funciona</a>
+    <a href="#clientes">Clientes</a>
+    <a href="#faq">Preguntas frecuentes</a>
+    <a class="btn btn-primary" href="https://wa.me/52XXXXXXXXXX?text=Hola%20GenPat%2C%20quiero%20cotizar%20medicamentos" target="_blank" rel="noopener">Cotizar por WhatsApp</a>
+  </nav>
+</header>
+
+<main id="main">
+  <!-- HERO: 3-second test. Qué es (h1) · por qué importa (sub) · qué hago ahora (CTA) -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap">
+      <div>
+        <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Cotizaciones en minutos</span>
+        <h1 id="hero-title">Tu pedido de medicamentos, <em>completo y a tiempo.</em></h1>
+        <p class="sub">Patente y genéricos en un solo proveedor. <strong>Envía tu lista por WhatsApp</strong> y recibe tu cotización hoy mismo, sin vueltas.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="https://wa.me/52XXXXXXXXXX?text=Hola%20GenPat%2C%20quiero%20cotizar%20medicamentos" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.5-.3z"/></svg>
+            Cotizar por WhatsApp
+          </a>
+          <a class="btn btn-ghost" href="#productos">Ver qué surtimos</a>
+        </div>
+        <p class="micro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Sin registro. Sin compromiso. Respuesta el mismo día.</p>
+        <ul class="chips" aria-label="Beneficios">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Producto original</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7"/><circle cx="7" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/></svg>Envío rápido</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg>Facturamos</li>
+        </ul>
+      </div>
+      <aside class="hero-card" aria-label="Ejemplo de cotización">
+        <h2>Así de simple es tu cotización</h2>
+        <ul>
+          <li>1. Envías tu lista <span>2 min</span></li>
+          <li>2. Te cotizamos <span>Hoy</span></li>
+          <li>3. Recibes tu pedido <span>Rápido</span></li>
+        </ul>
+        <a class="btn btn-primary" href="https://wa.me/52XXXXXXXXXX?text=Hola%20GenPat%2C%20quiero%20cotizar%20medicamentos" target="_blank" rel="noopener">Empezar ahora</a>
+      </aside>
+    </div>
+  </section>
+
+  <section id="productos" class="lazy" aria-labelledby="prod-title">
+    <div class="wrap">
+      <span class="kicker">Qué surtimos</span>
+      <h2 id="prod-title" class="sec-title">Todo lo que necesitas, con un solo proveedor.</h2>
+      <p class="sec-lead">Deja de cotizar con cinco distribuidores distintos. Nosotros conseguimos tu lista completa.</p>
+      <div class="grid">
+        <article class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="8" rx="4" transform="rotate(-45 12 12)"/><path d="m8.5 8.5 7 7"/></svg></div>
+          <h3>Medicamentos de patente</h3>
+          <p>Las marcas originales que tus pacientes y clientes piden por nombre.</p>
+        </article>
+        <article class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg></div>
+          <h3>Genéricos</h3>
+          <p>Alternativas intercambiables al mejor precio para cuidar tu margen.</p>
+        </article>
+        <article class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6v4l4 9a3 3 0 0 1-3 4H8a3 3 0 0 1-3-4l4-9z"/><path d="M7 14h10"/></svg></div>
+          <h3>Especialidad</h3>
+          <p>Productos difíciles de conseguir. Pregúntanos aunque creas que no lo hay.</p>
+        </article>
+        <article class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7"/><circle cx="7" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/></svg></div>
+          <h3>Entrega confiable</h3>
+          <p>Tu pedido llega completo y a tiempo, con seguimiento de principio a fin.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="como-funciona" class="soft lazy" aria-labelledby="how-title">
+    <div class="wrap">
+      <span class="kicker">Cómo funciona</span>
+      <h2 id="how-title" class="sec-title">Tres pasos. Cero complicaciones.</h2>
+      <ol class="steps">
+        <li><h3>Envía tu lista</h3><p>Por WhatsApp, foto de la receta o archivo de Excel. Como te sea más fácil.</p></li>
+        <li><h3>Recibe tu cotización</h3><p>Precios claros y disponibilidad confirmada el mismo día.</p></li>
+        <li><h3>Recibe tu pedido</h3><p>Confirmas, pagas y te lo enviamos. Así de simple.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="clientes" class="lazy" aria-labelledby="who-title">
+    <div class="wrap">
+      <span class="kicker">Para quién</span>
+      <h2 id="who-title" class="sec-title">Trabajamos con quien cuida la salud.</h2>
+      <div class="who">
+        <a href="https://wa.me/52XXXXXXXXXX?text=Hola%20GenPat%2C%20tengo%20una%20farmacia%20y%20quiero%20cotizar" target="_blank" rel="noopener"><span><b>Farmacias</b><small>Surte tu anaquel sin faltantes</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a href="https://wa.me/52XXXXXXXXXX?text=Hola%20GenPat%2C%20cotizo%20para%20clinica%20u%20hospital" target="_blank" rel="noopener"><span><b>Clínicas y hospitales</b><small>Abasto constante y facturado</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a href="https://wa.me/52XXXXXXXXXX?text=Hola%20GenPat%2C%20necesito%20un%20medicamento" target="_blank" rel="noopener"><span><b>Pacientes</b><small>Tu tratamiento, sin buscar en mil lugares</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" class="soft lazy" aria-labelledby="faq-title">
+    <div class="wrap">
+      <span class="kicker">Preguntas frecuentes</span>
+      <h2 id="faq-title" class="sec-title">Resolvemos tus dudas.</h2>
+      <div class="faq">
+        <details><summary>¿Cómo pido una cotización?</summary><p>Envíanos tu lista por WhatsApp (texto, foto o Excel). Te respondemos con precios y disponibilidad.</p></details>
+        <details><summary>¿Hacen envíos?</summary><p>Sí. Confirma con nosotros la cobertura y el tiempo de entrega para tu zona al cotizar.</p></details>
+        <details><summary>¿Emiten factura?</summary><p>Sí, facturamos todos los pedidos. Solo compártenos tus datos fiscales.</p></details>
+        <details><summary>¿Qué formas de pago aceptan?</summary><p>Te compartimos las opciones disponibles al confirmar tu pedido.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="lazy" aria-labelledby="final-title">
+    <div class="wrap">
+      <div class="final">
+        <h2 id="final-title">¿Tienes tu lista lista?</h2>
+        <p>Mándala ahora y recibe tu cotización hoy. Toma menos de 2 minutos.</p>
+        <a class="btn btn-primary" href="https://wa.me/52XXXXXXXXXX?text=Hola%20GenPat%2C%20quiero%20cotizar%20medicamentos" target="_blank" rel="noopener">Enviar mi lista por WhatsApp</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <a class="logo" href="#" style="color:#fff"><svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#123a52"/><path d="M11 8h4v6h6v4h-6v6h-4v-6H5v-4h6z" fill="#34d399"/></svg><span>GenPat <b>Pharma</b></span></a>
+        <p style="margin-top:12px;max-width:36ch">Medicamentos de patente y genéricos, surtidos completos y a tiempo.</p>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <ul>
+          <li><a href="https://wa.me/52XXXXXXXXXX" target="_blank" rel="noopener">WhatsApp</a></li>
+          <li><a href="tel:+52XXXXXXXXXX">Llamar</a></li>
+          <li><a href="mailto:contacto@genpat.mx">contacto@genpat.mx</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Sitio</h4>
+        <ul>
+          <li><a href="#productos">Productos</a></li>
+          <li><a href="#como-funciona">Cómo funciona</a></li>
+          <li><a href="aviso-privacidad.html">Aviso de privacidad</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <span>© <span id="y">2026</span> GenPat Pharma. Todos los derechos reservados.</span>
+      <a href="aviso-privacidad.html" style="color:#cfe0ea">Aviso de privacidad</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Sticky thumb-zone CTA (phones) -->
+<div class="dock" id="dock">
+  <a class="btn btn-call" href="tel:+52XXXXXXXXXX" aria-label="Llamar a GenPat Pharma">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>
+    Llamar
+  </a>
+  <a class="btn btn-wa" href="https://wa.me/52XXXXXXXXXX?text=Hola%20GenPat%2C%20quiero%20cotizar%20medicamentos" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2z"/></svg>
+    Cotizar ahora
+  </a>
+</div>
+
+<script>
+/* ~0.6 KB: menú móvil, año, dock visible solo cuando el CTA del hero/final no está en pantalla */
+(function(){
+  var b=document.querySelector('.menu-btn'),d=document.getElementById('drawer');
+  b.addEventListener('click',function(){var o=d.classList.toggle('open');b.setAttribute('aria-expanded',o);b.setAttribute('aria-label',o?'Cerrar menú':'Abrir menú')});
+  d.addEventListener('click',function(e){if(e.target.tagName==='A'){d.classList.remove('open');b.setAttribute('aria-expanded','false')}});
+  document.getElementById('y').textContent=new Date().getFullYear();
+  var dock=document.getElementById('dock'),seen=new Set(),targets=document.querySelectorAll('.cta-row,.final');
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){e.isIntersecting?seen.add(e.target):seen.delete(e.target)});dock.classList.toggle('show',seen.size===0)});
+    targets.forEach(function(t){io.observe(t)});
+  }else{dock.classList.add('show')}
+})();
+</script>
+</body>
+</html>
