@@ -22,7 +22,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 HERE = os.path.dirname(os.path.abspath(__file__))
 W, H, FPS = 1920, 1080, 30
 SR = 48000
-DUR = 63.0
+DUR = 81.0
 BAR = 70  # letterbox height
 
 F_TITLE = "/usr/share/fonts/opentype/inter/InterDisplay-Black.otf"
@@ -48,8 +48,12 @@ T_S2, T_S3, T_INT = 4.0, 7.0, 10.0
 SHOT = 4.0
 SIGN_PHASE = 1.0
 T_WALL = T_INT + NT * SHOT  # 46
-T_MONT = T_WALL + 6.0  # 52
-T_TITLE = T_MONT + 4.0  # 56
+T_MATCH = T_WALL + 6.0  # 52
+PLAY_CARD, PLAY_REAL = 0.6, 3.9
+PLAY = PLAY_CARD + PLAY_REAL  # 4.5
+NPLAY = 4
+T_MONT = T_MATCH + NPLAY * PLAY  # 70
+T_TITLE = T_MONT + 4.0  # 74
 
 
 def font(path, size):
@@ -296,6 +300,7 @@ def build_assets():
     A["t_credit"] = text_rgba("HOMENAJE DE FANS  ·  FOTOS: JERSEYS LA GAMBETA", font(F_MONO, 22),
                               fill=(150, 148, 140), tracking=4, shadow=False)
     A["emblem"] = make_emblem(300)
+    build_match_assets()
     print("assets ready", flush=True)
 
 
@@ -570,6 +575,402 @@ def scene_wall(t):
     return finish(img, t, sh)
 
 
+# ----------------------------------------------------------------------------
+# Match plays: top-down "tactical cam" of the cage court. Original choreography.
+# World units: court is 1600 x 820, goals centred on x=0 and x=1600.
+# ----------------------------------------------------------------------------
+CW, CH, CM, CS = 1600, 820, 200, 2  # court size, margin, supersample
+TIDX = {t[0]: i for i, t in enumerate(TEAMS)}
+SHORT = {"pumas": "PUMAS", "atlas": "ATLAS", "toluca": "TOLUCA", "santos": "SANTOS", "necaxa": "NECAXA",
+         "tigres": "TIGRES", "monterrey": "RAYADOS", "cruzazul": "CRUZ AZUL", "america": "AMÉRICA"}
+# face boxes (x, y, size) in the 110..960 crop, left / middle / right player
+FACES = {
+    "pumas": [(236, 238, 170), (560, 68, 147), (860, 235, 178)],
+    "atlas": [(256, 44, 190), (548, 69, 174), (848, 77, 185)],
+    "toluca": [(183, 236, 129), (505, 84, 171), (840, 200, 169)],
+    "santos": [(247, 273, 165), (593, 2, 131), (929, 196, 215)],
+    "necaxa": [(196, 138, 194), (543, 64, 173), (871, 148, 182)],
+    "tigres": [(238, 183, 180), (560, 25, 171), (874, 222, 188)],
+    "monterrey": [(243, 241, 160), (585, 49, 151), (884, 319, 176)],
+    "cruzazul": [(201, 87, 207), (548, 73, 183), (885, 129, 197)],
+    "america": [(205, 228, 191), (581, 6, 151), (897, 222, 187)],
+}
+
+# Each play: attacking team A (towards x=1600) vs B. Keyframes: (t, x, y).
+# Ball keys: (t, x, y, h_end, arc_peak). Player order: [middle, left, right] photo.
+PLAYS = [
+    dict(name="EL CAÑO", a="america", b="cruzazul", slow=(1.35, 0.35), focus=(1150, 405), zoom=1.9, goal=2.6,
+         A=[[(0, 720, 420), (0.6, 900, 410), (1.2, 1080, 405), (1.45, 1120, 380), (1.75, 1200, 440),
+             (2.1, 1290, 432), (2.5, 1360, 420), (3.25, 1450, 385)],
+            [(0, 520, 230), (3.25, 1150, 220)], [(0, 480, 620), (3.25, 1100, 640)]],
+         B=[[(0, 1250, 400), (0.9, 1170, 405), (1.35, 1145, 405), (1.8, 1150, 395), (2.3, 1200, 380),
+             (3.25, 1260, 390)],
+            [(0, 1350, 230), (3.25, 1380, 300)], [(0, 1330, 600), (2.6, 1480, 480), (3.25, 1500, 470)]],
+         ball=[(0, 748, 420, 0, 0), (0.3, 822, 415, 0, 0), (0.6, 928, 410, 0, 0), (0.9, 1010, 407, 0, 0),
+               (1.2, 1108, 405, 0, 0), (1.6, 1215, 412, 0, 0), (1.95, 1272, 432, 0, 0), (2.25, 1335, 425, 0, 0),
+               (2.6, 1600, 385, 0, 0), (3.25, 1642, 386, 0, 0)]),
+    dict(name="LA PARED DE ACERO", a="pumas", b="toluca", slow=(0.78, 0.35), focus=(1120, 740), zoom=2.0,
+         goal=2.45, wall=0.95,
+         A=[[(0, 820, 700), (0.5, 960, 700), (0.9, 1080, 705), (1.3, 1250, 700), (1.8, 1360, 600),
+             (2.3, 1420, 520), (3.25, 1480, 470)],
+            [(0, 600, 300), (3.25, 1200, 280)], [(0, 560, 520), (3.25, 1100, 420)]],
+         B=[[(0, 1120, 640), (0.6, 1060, 680), (1.0, 1050, 690), (1.5, 1100, 680), (3.25, 1200, 620)],
+            [(0, 1400, 300), (2.0, 1470, 420), (3.25, 1480, 400)],
+            [(0, 1300, 520), (1.9, 1360, 540), (3.25, 1420, 520)]],
+         ball=[(0, 846, 700, 0, 0), (0.5, 986, 700, 0, 0), (0.62, 1002, 704, 0, 0), (0.95, 1130, 808, 0, 0),
+               (1.3, 1266, 700, 0, 0), (1.8, 1386, 596, 0, 0), (2.05, 1402, 570, 0, 0),
+               (2.45, 1600, 445, 0, 0), (3.25, 1642, 442, 0, 0)]),
+    dict(name="LA CHILENA", a="atlas", b="santos", slow=(1.72, 0.35), focus=(1420, 400), zoom=2.1, goal=2.15,
+         spin=(1.72, 2.05),
+         A=[[(0, 1150, 560), (1.0, 1300, 500), (1.6, 1400, 420), (1.85, 1418, 405), (3.25, 1430, 400)],
+            [(0, 980, 140), (0.6, 1100, 130), (1.0, 1180, 125), (3.25, 1230, 160)],
+            [(0, 700, 420), (3.25, 1100, 500)]],
+         B=[[(0, 1260, 560), (1.0, 1330, 480), (1.85, 1442, 452), (3.25, 1450, 462)],
+            [(0, 1450, 250), (1.85, 1480, 330), (3.25, 1490, 340)], [(0, 1350, 650), (3.25, 1450, 560)]],
+         ball=[(0, 1005, 140, 0, 0), (0.6, 1125, 130, 0, 0), (0.95, 1196, 128, 0, 0),
+               (1.85, 1418, 398, 110, 230), (2.15, 1600, 430, 40, 0), (3.25, 1642, 430, 0, 0)]),
+    dict(name="GOL DE ORO", a="tigres", b="monterrey", slow=(1.4, 0.35), focus=(900, 412), zoom=1.6, goal=2.05,
+         A=[[(0, 700, 420), (0.9, 830, 420), (1.45, 878, 416), (3.25, 950, 415)],
+            [(0, 560, 240), (3.25, 700, 250)], [(0, 600, 600), (0.45, 612, 598), (3.25, 760, 620)]],
+         B=[[(0, 1050, 410), (1.45, 980, 412), (2.0, 1000, 410), (3.25, 1100, 400)],
+            [(0, 1250, 250), (3.25, 1300, 300)], [(0, 1250, 560), (3.25, 1320, 500)]],
+         ball=[(0, 586, 246, 0, 0), (0.45, 618, 586, 0, 0), (0.95, 858, 419, 0, 0), (1.45, 902, 416, 0, 0),
+               (2.05, 1600, 385, 0, 70), (3.25, 1645, 386, 0, 0)]),
+]
+
+
+def remap(tau, play):
+    """real local time -> play time (with a slow-motion window)."""
+    s0, L = play["slow"]
+    r = L / 1.0  # slow window lasts 1.0 s real
+    if tau < s0:
+        return tau
+    if tau < s0 + 1.0:
+        return s0 + (tau - s0) * r
+    return s0 + L + (tau - s0 - 1.0)
+
+
+def unmap(p, play):
+    s0, L = play["slow"]
+    if p < s0:
+        return p
+    if p < s0 + L:
+        return s0 + (p - s0) / L
+    return s0 + 1.0 + (p - s0 - L)
+
+
+def interp_path(keys, t):
+    if t <= keys[0][0]:
+        return np.array(keys[0][1:3], float)
+    if t >= keys[-1][0]:
+        return np.array(keys[-1][1:3], float)
+    P = [np.array(k[1:3], float) for k in keys]
+    T = [k[0] for k in keys]
+    i = max(j for j in range(len(T) - 1) if T[j] <= t)
+    t0, t1 = T[i], T[i + 1]
+    u = (t - t0) / (t1 - t0)
+
+    def tan(j):
+        if j == 0:
+            return (P[1] - P[0]) / (T[1] - T[0])
+        if j == len(P) - 1:
+            return (P[-1] - P[-2]) / (T[-1] - T[-2])
+        return (P[j + 1] - P[j - 1]) / (T[j + 1] - T[j - 1])
+
+    m0, m1 = tan(i) * (t1 - t0), tan(i + 1) * (t1 - t0)
+    h00, h10 = 2 * u ** 3 - 3 * u ** 2 + 1, u ** 3 - 2 * u ** 2 + u
+    h01, h11 = -2 * u ** 3 + 3 * u ** 2, u ** 3 - u ** 2
+    return h00 * P[i] + h10 * m0 + h01 * P[i + 1] + h11 * m1
+
+
+def ball_at(keys, t):
+    if t <= keys[0][0]:
+        k = keys[0]
+        return k[1], k[2], k[3]
+    if t >= keys[-1][0]:
+        k = keys[-1]
+        return k[1], k[2], k[3]
+    i = max(j for j in range(len(keys) - 1) if keys[j][0] <= t)
+    a, b = keys[i], keys[i + 1]
+    u = (t - a[0]) / (b[0] - a[0])
+    ue = 1 - (1 - u) ** 1.5
+    x = a[1] + (b[1] - a[1]) * ue
+    y = a[2] + (b[2] - a[2]) * ue
+    h = a[3] + (b[3] - a[3]) * u + 4 * b[4] * u * (1 - u)
+    return x, y, h
+
+
+def make_court():
+    w, h = (CW + 2 * CM) * CS, (CH + 2 * CM) * CS
+
+    def P(x, y):
+        return ((x + CM) * CS, (y + CM) * CS)
+
+    rng = np.random.default_rng(11)
+    n = rng.standard_normal((h // 16 + 1, w // 16 + 1)).astype(np.float32)
+    n = np.asarray(Image.fromarray(n).resize((w, h), Image.BICUBIC))
+    fine = rng.standard_normal((h, w)).astype(np.float32)
+    base = 44 + 6 * n + 3 * fine
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    inside = ((xx >= CM * CS) & (xx <= (CM + CW) * CS) & (yy >= CM * CS) & (yy <= (CM + CH) * CS))
+    base = np.where(inside, base, base * 0.45)
+    img = np.stack([base * 0.98, base, base * 1.04], -1)
+    # overhead light pools
+    for lx in (400, 800, 1200):
+        cx, cy = P(lx, 410)
+        r2 = ((xx - cx) ** 2 + (yy - cy) ** 2) / (2 * (330 * CS) ** 2)
+        img *= (1 + 0.55 * np.exp(-r2))[..., None]
+    im = Image.fromarray(np.clip(img, 0, 255).astype(np.uint8))
+    d = ImageDraw.Draw(im)
+    lw = 5 * CS
+    line = (200, 198, 188)
+    d.rectangle([*P(0, 0), *P(CW, CH)], outline=line, width=lw)
+    d.line([P(CW / 2, 0), P(CW / 2, CH)], fill=line, width=lw)
+    cx, cy = P(CW / 2, CH / 2)
+    d.ellipse([cx - 95 * CS, cy - 95 * CS, cx + 95 * CS, cy + 95 * CS], outline=line, width=lw)
+    d.ellipse([cx - 8 * CS, cy - 8 * CS, cx + 8 * CS, cy + 8 * CS], fill=line)
+    for gx, sgn in ((0, 1), (CW, -1)):
+        x0, y0 = P(gx, CH / 2)
+        bb = [x0 - 160 * CS, y0 - 160 * CS, x0 + 160 * CS, y0 + 160 * CS]
+        d.arc(bb, -90 if sgn > 0 else 90, 90 if sgn > 0 else 270, fill=line, width=lw)
+        # goal: posts + net
+        gy0, gy1 = P(gx, CH / 2 - 80)[1], P(gx, CH / 2 + 80)[1]
+        depth = 45 * CS * (-sgn)
+        for k in range(0, 13):
+            yk = gy0 + (gy1 - gy0) * k / 12
+            d.line([(x0, yk), (x0 + depth, yk)], fill=(150, 150, 150), width=CS)
+        for k in range(0, 5):
+            xk = x0 + depth * k / 4
+            d.line([(xk, gy0), (xk, gy1)], fill=(150, 150, 150), width=CS)
+        d.line([(x0, gy0), (x0 + depth, gy0), (x0 + depth, gy1), (x0, gy1)], fill=(240, 240, 240), width=4 * CS)
+        d.ellipse([x0 - 7 * CS, gy0 - 7 * CS, x0 + 7 * CS, gy0 + 7 * CS], fill=(250, 250, 250))
+        d.ellipse([x0 - 7 * CS, gy1 - 7 * CS, x0 + 7 * CS, gy1 + 7 * CS], fill=(250, 250, 250))
+    # cage fence ring (top-down) with posts
+    fo = 34
+    d.rectangle([*P(-fo, -fo), *P(CW + fo, CH + fo)], outline=(25, 26, 28), width=14 * CS)
+    for x in range(-fo, CW + fo + 1, 200):
+        for y in (-fo, CH + fo):
+            px, py = P(x, y)
+            d.rectangle([px - 9 * CS, py - 9 * CS, px + 9 * CS, py + 9 * CS], fill=(70, 72, 76),
+                        outline=(20, 20, 20), width=2 * CS)
+    for y in range(-fo, CH + fo + 1, 205):
+        for x in (-fo, CW + fo):
+            px, py = P(x, y)
+            d.rectangle([px - 9 * CS, py - 9 * CS, px + 9 * CS, py + 9 * CS], fill=(70, 72, 76),
+                        outline=(20, 20, 20), width=2 * CS)
+    # fence mesh strip
+    mesh = Image.new("L", im.size, 0)
+    md = ImageDraw.Draw(mesh)
+    st = 16 * CS
+    for k in range(-h, w + h, st):
+        md.line([(k, 0), (k + h, h)], fill=255, width=CS)
+        md.line([(k, 0), (k - h, h)], fill=255, width=CS)
+    strip = Image.new("L", im.size, 0)
+    sd = ImageDraw.Draw(strip)
+    sd.rectangle([*P(-fo - 22, -fo - 22), *P(CW + fo + 22, CH + fo + 22)], fill=255)
+    sd.rectangle([*P(-fo + 6, -fo + 6), *P(CW + fo - 6, CH + fo - 6)], fill=0)
+    mesh = Image.fromarray((np.asarray(mesh).astype(np.uint16) * np.asarray(strip) // 255).astype(np.uint8))
+    im.paste((150, 152, 156), (0, 0), mesh)
+    # faded centre emblem
+    em = Image.fromarray(A["emblem"].astype(np.uint8), "RGBA").resize((150 * CS, 150 * CS), Image.LANCZOS)
+    em.putalpha(em.getchannel("A").point(lambda v: v * 0.22))
+    im.paste(em, (int(cx - 75 * CS), int(cy - 75 * CS)), em)
+    return im
+
+
+def make_badge(key, k, acc, size=200):
+    src = Image.open(os.path.join(HERE, "assets", key + ".jpg")).convert("RGB")
+    fx, fy, fs = FACES[key][k]
+    cx, cy = fx + fs / 2, fy + 110 + fs * 0.52
+    half = fs * 0.78
+    face = src.crop((int(cx - half), int(cy - half), int(cx + half), int(cy + half))).resize((size, size),
+                                                                                            Image.LANCZOS)
+    face = Image.fromarray((grade(face) * 255).astype(np.uint8))
+    out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    mask = Image.new("L", (size, size), 0)
+    ring = int(size * 0.09)
+    ImageDraw.Draw(mask).ellipse([ring, ring, size - ring, size - ring], fill=255)
+    d = ImageDraw.Draw(out)
+    d.ellipse([0, 0, size - 1, size - 1], fill=(15, 15, 15, 255))
+    d.ellipse([3, 3, size - 4, size - 4], fill=acc + (255,))
+    out.paste(face, (0, 0), mask)
+    return out
+
+
+def build_match_assets():
+    A["court"] = make_court()
+    A["ball"] = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+    d = ImageDraw.Draw(A["ball"])
+    d.ellipse([2, 2, 61, 61], fill=(245, 245, 240, 255), outline=(30, 30, 30, 255), width=3)
+    for a in np.linspace(0, 2 * math.pi, 6)[:-1]:
+        x, y = 32 + 15 * math.sin(a), 32 - 15 * math.cos(a)
+        d.ellipse([x - 6, y - 6, x + 6, y + 6], fill=(30, 30, 30, 255))
+    d.ellipse([25, 25, 39, 39], fill=(30, 30, 30, 255))
+    shadow = Image.new("RGBA", (120, 120), (0, 0, 0, 0))
+    ImageDraw.Draw(shadow).ellipse([20, 20, 100, 100], fill=(0, 0, 0, 170))
+    A["shadow"] = shadow.filter(ImageFilter.GaussianBlur(9))
+    A["badges"] = {}
+    for key, *_rest in TEAMS:
+        acc = TEAMS[TIDX[key]][3]
+        A["badges"][key] = [make_badge(key, k, acc) for k in (1, 0, 2)]  # middle, left, right
+    A["vs"] = text_rgba("VS", font(F_TITLE, 220), fill=(255, 205, 60))
+    A["gol"] = text_rgba("¡GOL!", font(F_TITLE, 260), fill=(255, 205, 60))
+    for i, pl in enumerate(PLAYS):
+        pl["title"] = text_rgba(f"JUGADA {i + 1:02d}  ·  {pl['name']}", font(F_TITLE, 64))
+        pl["sub"] = text_rgba(f"{SHORT[pl['a']]} VS {SHORT[pl['b']]}", font(F_MONO, 30), fill=(200, 198, 190),
+                              tracking=6)
+        pl["score"] = [scoreboard(pl["a"], pl["b"], g) for g in (0, 1)]
+        pl["slow_txt"] = text_rgba("CÁMARA LENTA", font(F_MONO, 26), fill=(255, 205, 60), tracking=8)
+
+
+def scoreboard(a, b, ga):
+    w, h = 760, 74
+    im = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    d.rectangle([0, 0, w - 1, h - 1], fill=(12, 12, 14, 225))
+    d.rectangle([0, 0, 12, h - 1], fill=TEAMS[TIDX[a]][3] + (255,))
+    d.rectangle([w - 13, 0, w - 1, h - 1], fill=TEAMS[TIDX[b]][3] + (255,))
+    f = font(F_MONO, 32)
+    d.text((34, h / 2), SHORT[a], font=f, fill=(240, 238, 230, 255), anchor="lm")
+    d.text((w - 34, h / 2), SHORT[b], font=f, fill=(240, 238, 230, 255), anchor="rm")
+    d.rectangle([w / 2 - 70, 8, w / 2 + 70, h - 9], fill=(255, 205, 60, 255) if ga else (40, 40, 44, 255))
+    d.text((w / 2, h / 2), f"{ga} - 0", font=font(F_TITLE, 40), fill=(15, 15, 15, 255) if ga else
+           (240, 238, 230, 255), anchor="mm")
+    return np.asarray(im).astype(np.float32)
+
+
+def scene_match(t):
+    pi = min(int((t - T_MATCH) // PLAY), NPLAY - 1)
+    pl = PLAYS[pi]
+    lt = t - T_MATCH - pi * PLAY
+    ta, tb = TIDX[pl["a"]], TIDX[pl["b"]]
+    if lt < PLAY_CARD:  # VS card
+        half = W // 2
+        img = np.zeros((H, W, 3), np.float32)
+        slide = 1 - ease_out(lt / 0.25)
+        la = fit_crop(A["photos"][ta], 1.05, 0.5, 0.25, half, H)
+        lb = fit_crop(A["photos"][tb], 1.05, 0.5, 0.25, half, H)
+        off = int(slide * half)
+        img[:, : half - off] = la[:, off:]
+        img[:, half + off:] = lb[:, : half - off]
+        img[:, half - 4: half + 4] = np.array(TEAMS[ta][3]) / 255
+        img *= A["spot"] * 1.1
+        s = 1 + 0.4 * math.exp(-lt * 12)
+        vs = A["vs"]
+        vs = np.asarray(Image.fromarray(vs.astype(np.uint8), "RGBA").resize(
+            (int(vs.shape[1] * s), int(vs.shape[0] * s)), Image.BILINEAR)).astype(np.float32)
+        blend(img, vs, W / 2, H / 2, clamp01((lt - 0.12) / 0.06))
+        if lt < 0.05:
+            img += 0.7
+        return finish(img, t, 12 * math.exp(-lt * 10))
+
+    tau = lt - PLAY_CARD
+    p = remap(tau, pl)
+    s0, L = pl["slow"]
+    # camera: zoom into the action during slow motion
+    bump = clamp01((tau - (s0 - 0.35)) / 0.35) * clamp01(((s0 + 1.0 + 0.35) - tau) / 0.35)
+    bump = bump * bump * (3 - 2 * bump)
+    z = 1 + (pl["zoom"] - 1) * bump
+    f = np.array([800.0, 410.0]) + (np.array(pl["focus"]) - np.array([800.0, 410.0])) * bump
+    hx, hy = W / 2 / z, H / 2 / z
+    f[0] = min(max(f[0], -CM + hx), CW + CM - hx)
+    f[1] = min(max(f[1], -CM + hy), CH + CM - hy)
+    # shakes
+    shake = 0.0
+    g = pl["goal"]
+    if p >= g:
+        shake = 18 * math.exp(-(tau - unmap(g, pl)) * 6)
+    if "wall" in pl and p >= pl["wall"]:
+        shake = max(shake, 10 * math.exp(-(tau - unmap(pl["wall"], pl)) * 9))
+    box = ((f[0] - hx + CM) * CS, (f[1] - hy + CM) * CS, (f[0] + hx + CM) * CS, (f[1] + hy + CM) * CS)
+    frame = A["court"].resize((W, H), Image.BILINEAR, box=box)
+
+    def S(x, y):
+        return ((x - f[0]) * z + W / 2, (y - f[1]) * z + H / 2)
+
+    # net bulge after goal
+    if p >= g:
+        k = clamp01((tau - unmap(g, pl)) / 0.15) * math.exp(-max(0, tau - unmap(g, pl) - 0.15) * 2.5)
+        gx, gy = S(CW + 22, CH / 2)
+        glow = Image.new("RGBA", frame.size, (0, 0, 0, 0))
+        ImageDraw.Draw(glow).ellipse([gx - 70 * z, gy - 95 * z, gx + 70 * z, gy + 95 * z],
+                                     fill=(255, 215, 90, int(150 * k)))
+        frame = Image.alpha_composite(frame.convert("RGBA"), glow.filter(ImageFilter.GaussianBlur(25 * z)))
+    frame = frame.convert("RGBA")
+    # trail
+    trail = Image.new("RGBA", frame.size, (0, 0, 0, 0))
+    td = ImageDraw.Draw(trail)
+    prev = None
+    for kk in range(14, -1, -1):
+        bx, by, bh = ball_at(pl["ball"], remap(max(tau - kk * 0.018, 0), pl))
+        cur = S(bx, by - bh * 0.6)
+        if prev is not None:
+            a = int(200 * (1 - kk / 15))
+            td.line([prev, cur], fill=(255, 220, 120, a), width=max(2, int((9 - kk * 0.5) * z)))
+        prev = cur
+    # shadows first, then players, then ball
+    actors = []
+    for side, team in (("A", pl["a"]), ("B", pl["b"])):
+        for j, keys in enumerate(pl[side]):
+            x, y = interp_path(keys, p)
+            actors.append((A["badges"][team][j], x, y, side == "A" and j == 0))
+    R = 54
+    for _b, x, y, _m in actors:
+        sx, sy = S(x + 6, y + 9)
+        sz = int(2.3 * R * z)
+        sh = A["shadow"].resize((sz, sz), Image.BILINEAR)
+        frame.alpha_composite(sh, (int(sx - sz / 2), int(sy - sz / 2)))
+    bx, by, bh = ball_at(pl["ball"], p)
+    sx, sy = S(bx + bh * 0.25, by + bh * 0.15)
+    sz = int(30 * z * (1 + bh / 220))
+    sh = A["shadow"].resize((max(sz, 4), max(sz, 4)), Image.BILINEAR)
+    frame.alpha_composite(sh, (int(sx - sz / 2), int(sy - sz / 2)))
+    frame = Image.alpha_composite(frame, trail)
+    for badge, x, y, main in actors:
+        sx, sy = S(x, y)
+        sz = int(2 * R * z)
+        bimg = badge.resize((sz, sz), Image.BILINEAR)
+        if main and "spin" in pl and pl["spin"][0] <= p <= pl["spin"][1]:
+            u = (p - pl["spin"][0]) / (pl["spin"][1] - pl["spin"][0])
+            bimg = bimg.rotate(-360 * ease_out(u), resample=Image.BICUBIC)
+            sc = 1 + 0.35 * math.sin(math.pi * u)
+            bimg = bimg.resize((int(sz * sc), int(sz * sc)), Image.BILINEAR)
+            sz = int(sz * sc)
+        frame.alpha_composite(bimg, (int(sx - sz / 2), int(sy - sz / 2)))
+    bsz = max(6, int(26 * z * (1 + bh / 220)))
+    bimg = A["ball"].resize((bsz, bsz), Image.BILINEAR).rotate(-p * 720, resample=Image.BILINEAR)
+    sx, sy = S(bx, by - bh * 0.6)
+    frame.alpha_composite(bimg, (int(sx - bsz / 2), int(sy - bsz / 2)))
+
+    img = np.asarray(frame.convert("RGB")).astype(np.float32) / 255
+    img *= 0.92
+    # slow motion tint
+    slow_k = clamp01((tau - s0) / 0.1) * clamp01((s0 + 1.0 - tau) / 0.1)
+    if slow_k > 0:
+        lum = img.mean(-1, keepdims=True)
+        img = img * (1 - 0.35 * slow_k) + lum * np.array([1.0, 0.95, 0.8]) * 0.35 * slow_k
+        blend(img, pl["slow_txt"], W - 240, BAR + 120, slow_k)
+    # overlays
+    scored = 1 if p >= g else 0
+    blend(img, pl["score"][scored], W / 2, BAR + 60, clamp01(tau / 0.2))
+    la = ease_out((tau - 0.1) / 0.3) * clamp01((PLAY_REAL - tau) / 0.15)
+    blend(img, pl["title"], 70 - 50 * (1 - la), H - BAR - 150, la, anchor="tl")
+    blend(img, pl["sub"], 72 - 50 * (1 - la), H - BAR - 70, la, anchor="tl")
+    if p >= g:
+        gt = tau - unmap(g, pl)
+        sgol = 1 + 0.5 * math.exp(-gt * 10)
+        gimg = A["gol"]
+        gimg = np.asarray(Image.fromarray(gimg.astype(np.uint8), "RGBA").resize(
+            (int(gimg.shape[1] * sgol), int(gimg.shape[0] * sgol)), Image.BILINEAR)).astype(np.float32)
+        blend(img, gimg, W / 2, H / 2 - 20, clamp01(gt / 0.05) * clamp01((PLAY_REAL - tau) / 0.12))
+        if gt < 0.06:
+            img = img + 0.5 * (1 - gt / 0.06)
+    out = finish(img, t, shake)
+    if PLAY_REAL - tau < 0.08:
+        out = out * ((PLAY_REAL - tau) / 0.08)
+    return out
+
+
 MONT_RNG = np.random.default_rng(99)
 MONT_CUTS = []
 for _k in range(16):
@@ -629,8 +1030,10 @@ def render(fi):
         img = scene_rules(t)
     elif t < T_WALL:
         img = scene_team(t)
-    elif t < T_MONT:
+    elif t < T_MATCH:
         img = scene_wall(t)
+    elif t < T_MONT:
+        img = scene_match(t)
     elif t < T_TITLE:
         img = scene_montage(t)
     else:
@@ -801,7 +1204,7 @@ def make_audio(path):
     grooveL, grooveR = L.copy(), R.copy()
     L[:], R[:] = saveL, saveR
     # filter the wall section (tension)
-    i0, i1 = int(T_WALL * SR), int(T_MONT * SR)
+    i0, i1 = int(T_WALL * SR), int(T_MATCH * SR)
     grooveL[i0:i1] = lp_fft(grooveL[i0:i1], 450)
     grooveR[i0:i1] = lp_fft(grooveR[i0:i1], 450)
     L += grooveL
@@ -823,6 +1226,40 @@ def make_audio(path):
     add(boom(1.5), T_WALL + 2.6, 0.8)
     add(boom(1.5), T_WALL + 4.0, 0.8)
     add(clang(), T_WALL + 4.0, 0.25)
+
+    # match plays: touches, slow-mo, wall hits, goals
+    def thud():
+        d = 0.12
+        tt = np.arange(int(d * SR)) / SR
+        s = np.sin(2 * np.pi * (90 + 120 * np.exp(-tt / 0.01)) * tt) * np.exp(-tt / 0.04)
+        s += hp_fft(ar.normal(0, 1, len(tt)).astype(np.float32), 2000) * np.exp(-tt / 0.01) * 0.5
+        return s.astype(np.float32)
+
+    def net():
+        d = 0.7
+        tt = np.arange(int(d * SR)) / SR
+        nz = lp_fft(hp_fft(ar.normal(0, 1, len(tt)).astype(np.float32), 900), 5000)
+        return (nz * np.minimum(tt / 0.01, 1) * np.exp(-tt / 0.18)).astype(np.float32)
+
+    for i, pl in enumerate(PLAYS):
+        base = T_MATCH + i * PLAY
+        add(boom(1.2), base, 0.6)
+        add(clang(), base + 0.12, 0.3)
+        b0 = base + PLAY_CARD
+        for k in pl["ball"]:
+            if k[1] < CW and k[0] > 0:
+                add(thud(), b0 + unmap(k[0], pl), 0.55, ar.uniform(-0.3, 0.3))
+        add(thud(), b0, 0.5)
+        s0 = pl["slow"][0]
+        add(whoosh(0.5, rev=True), b0 + s0, 0.35)
+        add(boom(1.0), b0 + s0, 0.3)
+        if "wall" in pl:
+            add(clang(), b0 + unmap(pl["wall"], pl), 0.6, 0.2)
+        tg = b0 + unmap(pl["goal"], pl)
+        add(net(), tg, 0.6)
+        add(boom(2.0), tg, 0.9)
+        add(clang(), tg + 0.02, 0.45, 0.4)
+        add(clang(), tg + 0.1, 0.3, -0.4)
 
     # montage: 8th-note drums + riser
     for k in range(16):
@@ -881,7 +1318,7 @@ def main():
     build_assets()
     if args.preview:
         os.makedirs(os.path.join(HERE, "preview"), exist_ok=True)
-        for t in [2.5, 5.5, 7.5, 9.0, 10.5, 12.5, 14.4, 30.6, 44.0, 47.0, 49.5, 51.0, 53.0, 57.5, 60.5]:
+        for t in [12.5, 49.5, 52.3, 53.5, 54.6, 55.6, 57.3, 58.4, 59.6, 62.8, 64.6, 65.6, 67.6, 68.8, 70.5, 78.0]:
             fr = np.frombuffer(render(int(t * FPS)), np.uint8).reshape(H, W, 3)
             Image.fromarray(fr).resize((960, 540)).save(os.path.join(HERE, "preview", f"t{t:05.1f}.jpg"))
         return
